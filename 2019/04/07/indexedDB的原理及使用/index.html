@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="indexedDB,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="什么是indexedDBIndexedDB 是一种可以让你在用户的浏览器内持久化存储数据的方法。IndexedDB 为生成 Web Application提供了丰富的查询能力，使我们的应用在在线和离线时都可以正常工作。 IndexedDB 是一个事务型数据库系统，类似于基于 SQL 的 RDBMS。 然而不同的是它使用固定列表，IndexedDB 是一个基于 JavaScript 的面向对象的数据">
+<meta name="keywords" content="indexedDB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="indexedDB的原理及使用">
+<meta property="og:url" content="http://yoursite.com/2019/04/07/indexedDB的原理及使用/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="什么是indexedDBIndexedDB 是一种可以让你在用户的浏览器内持久化存储数据的方法。IndexedDB 为生成 Web Application提供了丰富的查询能力，使我们的应用在在线和离线时都可以正常工作。 IndexedDB 是一个事务型数据库系统，类似于基于 SQL 的 RDBMS。 然而不同的是它使用固定列表，IndexedDB 是一个基于 JavaScript 的面向对象的数据">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-07T09:47:09.548Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="indexedDB的原理及使用">
+<meta name="twitter:description" content="什么是indexedDBIndexedDB 是一种可以让你在用户的浏览器内持久化存储数据的方法。IndexedDB 为生成 Web Application提供了丰富的查询能力，使我们的应用在在线和离线时都可以正常工作。 IndexedDB 是一个事务型数据库系统，类似于基于 SQL 的 RDBMS。 然而不同的是它使用固定列表，IndexedDB 是一个基于 JavaScript 的面向对象的数据">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/07/indexedDB的原理及使用/">
+
+
+
+
+
+  <title>indexedDB的原理及使用 | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/07/indexedDB的原理及使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">indexedDB的原理及使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-07T17:26:53+08:00">
+                2019-04-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HTML5/" itemprop="url" rel="index">
+                    <span itemprop="name">HTML5</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HTML5/存储/" itemprop="url" rel="index">
+                    <span itemprop="name">存储</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="什么是indexedDB"><a href="#什么是indexedDB" class="headerlink" title="什么是indexedDB"></a>什么是indexedDB</h1><p>IndexedDB 是一种可以让你在用户的浏览器内持久化存储数据的方法。IndexedDB 为生成 Web Application提供了丰富的查询能力，使我们的应用在在线和离线时都可以正常工作。</p>
+<p>IndexedDB 是一个事务型数据库系统，类似于基于 SQL 的 RDBMS。 然而不同的是它使用固定列表，IndexedDB 是一个基于 JavaScript 的面向对象的数据库。 IndexedDB 允许您存储和检索用键索引的对象; 可以存储 structured clone algorithm 支持的任何对象。 您只需要指定数据库模式，打开与数据库的连接，然后检索和更新一系列事务中的数据。</p>
+<ul>
+<li>浏览器支持：PC端：chromw11+，FF4+，IE10+  移动端：支持不较弱。</li>
+<li>Web SQL：在移动端的支持比较好，但是W3C已不再维护Web SQL。</li>
+</ul>
+<h2 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h2><p>域名分配独立空间，一个域名下可创建多个数据库，每个DB可以创建多个对象储存空间（表），一个对象存储空间可以存储多个对象数据。</p>
+<h2 id="indexedDB的操作"><a href="#indexedDB的操作" class="headerlink" title="indexedDB的操作"></a>indexedDB的操作</h2><p>indexedDB的主要操作围绕于：增删改、索引、事务、游标。接下来详细介绍一下关于indexedDB的用法<br><strong>1. 获取indexedDB</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const indexedDB = window.indexedDB</span><br><span class="line">|| window.webkitIndexedDB</span><br><span class="line">|| window.mozIndexedDB</span><br><span class="line">|| window.msIndexedDB;</span><br></pre></td></tr></table></figure></p>
+<p>window.indexedDB对象只有一个open方法，用于打开指定的数据库</p>
+<p><strong>2. 打开或创建数据库</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DBOpenRequest = window.indexedDB.open(name, version)</span><br></pre></td></tr></table></figure>
+<p>参数为：数据库名和版本号；数据库存在，则打开它；否则创建</p>
+<p><strong>DBOpenRequest</strong>对象用于处理用户对数据库的操作请求，可以通过它定义操作成功和失败的处理函数。 它有以下三个方法：</p>
+<ul>
+<li><strong>onupgradeneeded</strong>：在创建数据库或数据库版本变化时触发，可创建表或索引等</li>
+<li><strong>onsuccess</strong>：打开成功时触发(可以获得对象存储空间信息)</li>
+<li><strong>onerror</strong>：打开失败时触发</li>
+</ul>
+<p>onupgradeneeded事件会在数据库第一次被打开时；打开数据库时指定的版本号高于当前被持久化的数据库版本号。(可通过修改版本号触发该事件)，在该事件的回调里面可以对数据库添加表等操作。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">openRequst.onupgradeneeded = (e) =&gt; &#123;</span><br><span class="line">    console.log(&apos;running onupgradeneeded&apos;)</span><br><span class="line">    // 获得数据库实例对象</span><br><span class="line">    db = e.target.result</span><br><span class="line">    console.log(`openRequst.onupgradeneeded db.version： $&#123;db.version&#125;`)</span><br><span class="line">    // 新建一个表</span><br><span class="line">    // 检查这个数据库是否包含这个表/如果不包含  就创建这个表 （参数：keypath主键、是否自增）|</span><br><span class="line">    // 哪些字段是索引的、字段是不是唯一的</span><br><span class="line">    if (!(db.objectStoreNames.contains(tableName))) &#123;</span><br><span class="line">        console.log(&apos;need to create the objectStore&apos;)</span><br><span class="line"></span><br><span class="line">        const objectStore = db.createObjectStore(tableName, &#123; keyPath: &apos;id&apos;, autoIncrement: true &#125;)</span><br><span class="line">        objectStore.createIndex(&apos;name&apos;, &apos;name&apos;, &#123; unique: false &#125;)</span><br><span class="line">        objectStore.createIndex(&apos;phone&apos;, &apos;phone&apos;, &#123; unique: false &#125;)</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>3. 打开事务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const transaction= db.transaction([tableName],&lt;mode&gt;)</span><br></pre></td></tr></table></figure>
+<p><mode>值：</mode></p>
+<ul>
+<li>readonly：只读</li>
+<li>readwrite：可读写</li>
+<li>verionchange：版本变更</li>
+</ul>
+<p><strong>transaction有以下三个方法：</strong></p>
+<ul>
+<li>oncomplete ：当事务中的所有操作请求都被处理完成时触发</li>
+<li>onerror：当事务中出现错误时触发，默认的处理方式为回滚事务</li>
+<li>onabort ：当事务被终止时触发</li>
+</ul>
+<p><strong>4. 从事务中获取存储空间对象objectStore</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const objectStore= transaction.objectStore(tableName)</span><br></pre></td></tr></table></figure></p>
+<p><strong>objectStore对象上的方法：</strong></p>
+<ul>
+<li>add(data)：添加数据</li>
+<li>get(value)：查询数据</li>
+<li>put(data)：更新数据</li>
+<li>delete(value)：删除数据</li>
+<li>clear()：清空/删除数据库</li>
+<li>index(value)：获得索引值</li>
+<li>openCursor()：打开游标（用于遍历）</li>
+</ul>
+<p>更新数据的时候可以先get获取数据，修改之后再put<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var result = objStore.get(&quot;110&quot;);</span><br><span class="line"> result.onsuccess=function(e)&#123;</span><br><span class="line">     var student=e.target.result;</span><br><span class="line">     student.name=&apos;wwww1&apos;;</span><br><span class="line">     objStore.put(student);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>result也对应有onsuccess、onerror事件</p>
+<blockquote>
+<p>利用索引查询</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const objStore = transaction.objectStore(tabName)</span><br><span class="line">// 获得索引名</span><br><span class="line">const index = objStore.index(&apos;name&apos;) </span><br><span class="line">//通过索引值获取数据</span><br><span class="line">var result=index.get(&apos;fr&apos;)</span><br><span class="line">result.onsuccess=function(e)&#123;</span><br><span class="line">    var student=e.target.result</span><br><span class="line">    console.log(student.name+&quot;：索引查询&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>游标遍历所有</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">const objectStore = transaction.objectStore(tableName)</span><br><span class="line">// 打开游标</span><br><span class="line">objectStore.openCursor().onsuccess= (e)=&gt;&#123;</span><br><span class="line">    const cursor= e.target.result</span><br><span class="line">    if(cursor)&#123;</span><br><span class="line">        console.log(cursor.value)</span><br><span class="line">        cursor.continue()</span><br><span class="line">    &#125;else &#123;</span><br><span class="line">        console.log(&apos;done with cursor&apos;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>打开游标openCursor()还可以添加两个参数(范围，排序条件),游标遍历符合条件的数据, range可以为null/不写</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 范围  true不包括/false包括</span><br><span class="line">// 1. 匹配等于指定键值的记录</span><br><span class="line">IDBKeyRange.only(指定键值)</span><br><span class="line"></span><br><span class="line">// 2. 匹配小于指定键值的记录</span><br><span class="line">IDBKeyRange.lowerBound(指定键值, 是否不包括指定键值)</span><br><span class="line"></span><br><span class="line">// 3. 匹配大于指定键值的记录</span><br><span class="line">IDBKeyRange.upperBound(指定键值, 是否不包括指定键值)</span><br><span class="line"></span><br><span class="line">// 4. 匹配指定范围内的记录</span><br><span class="line">IDBKeyRange.bound(下限键值，上限键值，是否不包括下限键值，是否不包括上限键值</span><br><span class="line"></span><br><span class="line">// 顺序参数</span><br><span class="line">IDBCursor.NEXT，顺序循环；</span><br><span class="line">IDBCursor.NEXT_NO_DUPLICATE，顺序循环且键值不重复；</span><br><span class="line">IDBCursor.PREV，倒序循环；</span><br><span class="line">IDBCursor.PREV _NO_DUPLICATE，倒序循环且键值不重复。</span><br></pre></td></tr></table></figure>
+<p><strong>5. 关闭数据库</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.close()</span><br></pre></td></tr></table></figure>
+<p><strong>6. 删除数据库</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">indexedDB.deleteDatabase(dbName)</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><h2 id="1-打开数据库"><a href="#1-打开数据库" class="headerlink" title="1. 打开数据库"></a>1. 打开数据库</h2><p><strong>indexedDB.open</strong> 接收两个参数，分别为数据库名称和版本，返回的是一个 IDBOpenDBRequest 对象。可以以 DOM 事件的方式监听它的 success 和 error 来获取到它的结果。几乎所有对 indexedDB 的异步操作都是这种以事件的方式进行，返回一个拥有结果或错误的 IDBRequest 对象。在这里，open 方法得到的结果是一个 IDBDatabase 的实例。</p>
+<p>第二个参数是数据库的版本。版本决定了数据库的模式：存储在里面的 object store 和它们的结构。当第一次通过 open 方法打开数据库时，会触发一个 onupgradeneeded 事件，我们可以也只能在这里设置数据库模式。当数据库已经存在，而我们打开一个更高版本时，同样会触发 onupgradeneeded 事件，用来更新数据库模式。</p>
+<h3 id="添加处理方法"><a href="#添加处理方法" class="headerlink" title="添加处理方法"></a>添加处理方法</h3><p>我们可以通过监听它的 success, error 以及 upgradeneeded 事件来做相应的操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">request.onerror = function (event) &#123;</span><br><span class="line">  // Do something with request.errorCode!</span><br><span class="line">  console.error(&apos;open request failed&apos;,event.target.error)</span><br><span class="line">&#125;</span><br><span class="line">request.onsuccess = function (event) &#123;</span><br><span class="line">  // Do something with request.result!</span><br><span class="line">  // console.log(&apos;open request success&apos;, event)</span><br><span class="line">  var db = event.target.result</span><br><span class="line">  db.onerror = function (e) &#123;</span><br><span class="line">    console.error(&apos;Database error: &apos;, e.target.error)</span><br><span class="line">  &#125;</span><br><span class="line">  db.onclose = e =&gt; &#123;</span><br><span class="line">    console.error(&apos;Database close:&apos;, e.target.error)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以在 success 事件里面拿到 db 对象，这个是后续操作的主体。</p>
+<h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><p>由于是基于 DOM 事件模式的，所以所有的错误是会冒泡的。也就是说在一个特定 request 的上引发的错误会依次冒泡到事务，然后到 db 对象。<br>如果为了简化错误处理，可以直接在 db 对象上添加错误处理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db.onerror = function (e) &#123;</span><br><span class="line">  // 可以处理这个数据库上所有的错误</span><br><span class="line">  console.error(&apos;Database error: &apos;, e.target.error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-创建或更新数据库版本"><a href="#2-创建或更新数据库版本" class="headerlink" title="2. 创建或更新数据库版本"></a>2. 创建或更新数据库版本</h2><p>当创建或者增大数据库版本的时候，会触发 onupgradeneeded 事件。在事件内部，可以拿到 db 对象来创建或更新 object store , 具体如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">request.onupgradeneeded = function (event) &#123;</span><br><span class="line">  /**</span><br><span class="line">   * NOTE:</span><br><span class="line">   * 1. 创建新的 objectStore</span><br><span class="line">   * 2. 删除旧的不需要的 objectStore</span><br><span class="line">   * 3. 如果需要更新已有 objectStore 的结构，需要先删除原有的 objectStore ，然后重新创建</span><br><span class="line">   */</span><br><span class="line">  // The IDBDatabase interface</span><br><span class="line">  console.log(&apos;onupgradeneeded&apos;, event)</span><br><span class="line">  var db = event.target.result</span><br><span class="line">  // Create an objectStore for this database</span><br><span class="line">  const objectStore = db.createObjectStore(OB_NAMES.UseKeyPath, &#123;</span><br><span class="line">    keyPath: &apos;time&apos;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-构造数据库"><a href="#3-构造数据库" class="headerlink" title="3. 构造数据库"></a>3. 构造数据库</h2><p>indexedDB 是以对象存储（object store）而不是以表结构存储的，一个数据库可以存储任意多个存储对象。每当有一个值存储在 object store 里面，就必须和一个 key 关联起来。有几种提供 key 的方法，取决于 object store 使用 key path 还是 key generator</p>
+<h2 id="4-事务"><a href="#4-事务" class="headerlink" title="4. 事务"></a>4. 事务</h2><p>所有对数据库的操作都是建立在事务 (transaction) 上的，有三种模式(mode)：readonly, readewrite, versionchange.<br>要修改数据库结构的 schema ，必须在 versionchange 模式下。读取和修改对应另外两种模式。<br>通过 IDBDatabase.transaction 打开一个 transaction, 接收两个参数：storeNames, mode.</p>
+<p><strong>加速事务操作：</strong><br>当定义作用域时（scope）， 只定义需要的 object stores. 这样，就可以在不重叠的作用域上并行的执行多个事务。<br>只有在需要的时候才开启一个 readwrite 事务。因为在重叠的作用域上可以并发执行多个 readonly 事务，但只能有一个 readwrite 事务。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/indexedDB/" rel="tag"># indexedDB</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/07/Hello-Blog/" rel="next" title="Hello Blog">
+                <i class="fa fa-chevron-left"></i> Hello Blog
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/07/localStorage需要注意的地方/" rel="prev" title="localStorage需要注意的地方">
+                localStorage需要注意的地方 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">愿你努力之事皆有所成</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是indexedDB"><span class="nav-number">1.</span> <span class="nav-text">什么是indexedDB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#存储结构"><span class="nav-number">1.1.</span> <span class="nav-text">存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#indexedDB的操作"><span class="nav-number">1.2.</span> <span class="nav-text">indexedDB的操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-打开数据库"><span class="nav-number">2.1.</span> <span class="nav-text">1. 打开数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加处理方法"><span class="nav-number">2.1.1.</span> <span class="nav-text">添加处理方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误处理"><span class="nav-number">2.1.2.</span> <span class="nav-text">错误处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-创建或更新数据库版本"><span class="nav-number">2.2.</span> <span class="nav-text">2. 创建或更新数据库版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-构造数据库"><span class="nav-number">2.3.</span> <span class="nav-text">3. 构造数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-事务"><span class="nav-number">2.4.</span> <span class="nav-text">4. 事务</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
