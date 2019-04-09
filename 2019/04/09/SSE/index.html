@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="短轮询、长轮询,Comet,SSE,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、comet 服务器推送Ajax是一种从页面向服务器请求数据的技术，而comet是一种服务器向页面推送数据的技术。 短轮询/轮询浏览器定时向服务器发送请求，看有没有更新的数据 短轮询是在特定的的时间间隔（如每1秒），由浏览器对服务器发出HTTP请求，然后由服务器返回最新的数据给客户端的浏览器。不管服务端数据有没有变化，客户端都会发起请求，来获取数据。  耗流量、有很多连接   浏览器需要不断的向">
+<meta name="keywords" content="短轮询、长轮询,Comet,SSE">
+<meta property="og:type" content="article">
+<meta property="og:title" content="总结轮询、长轮询、Comet、SSE">
+<meta property="og:url" content="http://yoursite.com/2019/04/09/SSE/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="一、comet 服务器推送Ajax是一种从页面向服务器请求数据的技术，而comet是一种服务器向页面推送数据的技术。 短轮询/轮询浏览器定时向服务器发送请求，看有没有更新的数据 短轮询是在特定的的时间间隔（如每1秒），由浏览器对服务器发出HTTP请求，然后由服务器返回最新的数据给客户端的浏览器。不管服务端数据有没有变化，客户端都会发起请求，来获取数据。  耗流量、有很多连接   浏览器需要不断的向">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T14:48:55.099Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="总结轮询、长轮询、Comet、SSE">
+<meta name="twitter:description" content="一、comet 服务器推送Ajax是一种从页面向服务器请求数据的技术，而comet是一种服务器向页面推送数据的技术。 短轮询/轮询浏览器定时向服务器发送请求，看有没有更新的数据 短轮询是在特定的的时间间隔（如每1秒），由浏览器对服务器发出HTTP请求，然后由服务器返回最新的数据给客户端的浏览器。不管服务端数据有没有变化，客户端都会发起请求，来获取数据。  耗流量、有很多连接   浏览器需要不断的向">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/09/SSE/">
+
+
+
+
+
+  <title>总结轮询、长轮询、Comet、SSE | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/09/SSE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">总结轮询、长轮询、Comet、SSE</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-09T22:46:06+08:00">
+                2019-04-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/通信/" itemprop="url" rel="index">
+                    <span itemprop="name">通信</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="一、comet-服务器推送"><a href="#一、comet-服务器推送" class="headerlink" title="一、comet 服务器推送"></a>一、comet 服务器推送</h1><p>Ajax是一种从页面向服务器请求数据的技术，而comet是一种服务器向页面推送数据的技术。</p>
+<h2 id="短轮询-轮询"><a href="#短轮询-轮询" class="headerlink" title="短轮询/轮询"></a>短轮询/轮询</h2><p>浏览器定时向服务器发送请求，看有没有更新的数据</p>
+<p>短轮询是在特定的的时间间隔（如每1秒），由浏览器对服务器发出HTTP请求，然后由服务器返回最新的数据给客户端的浏览器。不管服务端数据有没有变化，客户端都会发起请求，来获取数据。</p>
+<ul>
+<li>耗流量、有很多连接</li>
+</ul>
+<blockquote>
+<p>浏览器需要不断的向服务器发出请求，然而HTTP请求可能包含较长的头部，其中真正有效的数据可能只是很小的一部分，显然这样会浪费很多的带宽等资源</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 客户端</span><br><span class="line">var xhr = new XMLHttpRequest()</span><br><span class="line">setInterval(() =&gt; &#123;</span><br><span class="line">    xhr.open(&apos;GET&apos;, &apos;/user&apos;)</span><br><span class="line">    xhr.onreadystatechange = () =&gt; &#123;            if (xhr.readyState == 4) &#123;                   console.log(xhr.response);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    xhr.send();</span><br><span class="line">&#125;, 1000)</span><br><span class="line"></span><br><span class="line">// fetchsetInterval</span><br></pre></td></tr></table></figure>
+<h2 id="两种实现Comet的方法"><a href="#两种实现Comet的方法" class="headerlink" title="两种实现Comet的方法"></a>两种实现Comet的方法</h2><h3 id="1-长轮询"><a href="#1-长轮询" class="headerlink" title="1. 长轮询"></a>1. 长轮询</h3><p>页面发起一个到服务器的请求，然后服务器一直保持连接打开，直到有数据可发送。发送完数据之后，浏览器关闭连接，随即又发起一个到服务器的新请求。这一过程在页面打开期间一直持续不断。</p>
+<blockquote>
+<p>客户端发送请求后，服务器端不会立即返回数据，服务器端会阻塞请求，连接不会立即断开，直到服务器端有数据更新或者是连接超时才返回，客户端才再次发出请求，新建连接，如此反复，从而获取最新数据。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//客户端</span><br><span class="line">function getXHRNewData() &#123;</span><br><span class="line">    let xhr = new XMLHttpRequest();</span><br><span class="line">    xhr.open(&apos;GET&apos;, &apos;/user&apos;);</span><br><span class="line">    xhr.onreadystatechange = () =&gt; &#123;</span><br><span class="line">        if (xhr.readyState == 4) &#123;</span><br><span class="line">            console.log(xhr.response);</span><br><span class="line">            getXHRNewData();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    xhr.send();</span><br><span class="line">&#125;</span><br><span class="line">getXHRNewData()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// getFetchNewData  finally</span><br></pre></td></tr></table></figure>
+<p>无论是短轮询还是长轮询，浏览器都要在接收数据之前，先发起对服务器的连接。两个最大的区别在于<strong>服务器如何/什么时候发送数据</strong>。短轮询是服务器立即发送响应，无论数据是否有效。长轮询是等待发送响应。轮询的优势是所有浏览器都支持，因为使用XHR对象和setTimeout就能实现</p>
+<h3 id="2-HTTP流"><a href="#2-HTTP流" class="headerlink" title="2. HTTP流"></a>2. HTTP流</h3><p>流在页面的整个生命周期内只使用一个HTTP连接。就是浏览器向服务器向服务器发送一个请求，而服务器保持连接打开，然后周期性地向浏览器发送数据。</p>
+<ul>
+<li>P589</li>
+</ul>
+<h1 id="二、SSE-服务器发送事件-Server-Sent-Events"><a href="#二、SSE-服务器发送事件-Server-Sent-Events" class="headerlink" title="二、SSE 服务器发送事件(Server Sent Events)"></a>二、SSE 服务器发送事件(Server Sent Events)</h1><p>围绕只读Comet交互推出的API或者模式。SSE API用于创建到服务器的单向连接，服务器通过这个连接可以发送任意数量的数据。服务器响应的MIME类型是text/event-stream，而且浏览器中的JS API能够解析格式输出。SSE支持短轮询、长轮询、HTTP流，而且能在断开连接时自动确定合适重新连接。有了这个API，再实现Comet就容易多了。</p>
+<p>依赖原生的HTTP，所以对于开发者来说更好理解。 比如在nodeJS，只要我不执行res.end()，并且一定时间持续发送信息的话，那么该连接就会持续打开(keep-alive)。其实通俗来说，就是一个长连接</p>
+<h2 id="1-SSE的API"><a href="#1-SSE的API" class="headerlink" title="1. SSE的API"></a>1. SSE的API</h2><p>SSE主要就是创建一个EventSource对象，并传进一个入口点，不过目前还不支持CORS，所以也被限制在同源策略下，所以传入的URL必须与创建对象页面同源。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//指定路由发送</span><br><span class="line">var source = new EventSource(&apos;/dates&apos;)</span><br><span class="line"></span><br><span class="line">source.onopen = function(e) &#123; //当连接正式建立时触发</span><br><span class="line">    console.log(e)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">source.onmessage = function(e) &#123;  //监听信息的传输</span><br><span class="line">    var data = JSON.parse(e.data),</span><br><span class="line">        origin = e.origin</span><br><span class="line">&#125;</span><br><span class="line">source.onerror = function(e) &#123; //当连接发生error时触发</span><br><span class="line">    console.log(e)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><p>EventSource的实例有一个readyState属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0：正连接到服务器</span><br><span class="line">1：打开了连接</span><br><span class="line">2：关闭了连接</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>实例还有3个事件</p>
+</li>
+</ol>
+<ul>
+<li>open：在建立连接时触发</li>
+<li>message：在从服务器接收的新事件时触发</li>
+<li>error：在无法建立连接时触发<blockquote>
+<p>message事件的回调中event返回相关的数据，包括data-服务器返回的数据、origin-服务端URL的域名部分，服务器发回的数据以字符串的形式保存在event.data中。</p>
+</blockquote>
+</li>
+</ul>
+<ol start="3">
+<li>默认情况下，EventSource对象会保持与服务器的活动连接。如果连接断开，还会重新连接。这就意味着SSE适合长轮询和HTTP流。如果想强制立即断开连接并且不再重新连接，可以调用close()</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source.close()</span><br></pre></td></tr></table></figure>
+<h2 id="2-事件流"><a href="#2-事件流" class="headerlink" title="2. 事件流"></a>2. 事件流</h2><p><strong>服务器返回数据格式</strong>：所谓的服务器事件会通过一个持久的HTTP响应发送，这个响应的类型为<strong>text/event-stream</strong>。响应的格式是纯文本，最简单的情况是每个数据项都带有前缀data:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data: foo</span><br><span class="line"></span><br><span class="line">data: bar</span><br><span class="line"></span><br><span class="line">data:foo</span><br><span class="line">data:bar</span><br></pre></td></tr></table></figure>
+<p>对于以上响应，事件流中的第一个message事件返回event.data值为”foo”，第三个message事件返回event.data值为”foo\nbar”。对于多个连续的以data:开头的数据行，将作为多段数据解析，每个值之间以一个换行符分隔。只有在包含data:的数据行后面有空行时，才会触发message事件，因此在服务器上生成事件流时不能忘了多添加这一行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data: foo</span><br><span class="line">id: 1</span><br></pre></td></tr></table></figure></p>
+<p>通过id:前缀可以给特定的事件指定一个关联的ID，这个ID位于data:行前面或后面皆可。设置了ID后，EventSource对象会跟踪上一次触发的事件。如果连接断开，会先服务器发送一个包含名为Last-Event-ID的特殊HTTP头部的请求，以便服务器知道下一次该触发哪个事件。在多次连接的事件流中，这种机制可以确保浏览器以正确的顺序收到连接的数据段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">data: hi</span><br><span class="line"> </span><br><span class="line">data: second event</span><br><span class="line">id: 100</span><br><span class="line"> </span><br><span class="line">event: myevent</span><br><span class="line">data: third event</span><br><span class="line">id: 101</span><br><span class="line"> </span><br><span class="line">: this is a comment</span><br><span class="line">data: fourth event</span><br><span class="line">data: fourth event continue</span><br></pre></td></tr></table></figure>
+<p>每一段数据我们称之为事件，每一个事件经过空行分隔。“:”前面是数据类型，后面是数据。通常的类型有：</p>
+<ul>
+<li>空类型: 表示注释,在处理是会默认被删除.比如:this is a comment.</li>
+<li>event: 声明该事件类型,比如message.</li>
+<li>data: 最重要的一个类型, 表示传输的数据。可以为string格式或者JSON格式. 比如:data: {“username”: “bobby”}</li>
+<li>id: 其实就是lastEventId. 用来表明该次事件在整个流中的序号</li>
+<li>retry: 用来表明浏览器断开再次连接之前等待的事件(不常用)</li>
+</ul>
+<p>服务器端不仅可以返回指定数据,还可以返回指定事件.不过默认情况下都是message事件, 但我们也可以指定事件，上面的myevent事件。即这就是触发自定义事件的方式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var source = new EventSource(&apos;/someEvents&apos;);</span><br><span class="line">source.addEventListener(&apos;myevent&apos;, function(event)&#123;</span><br><span class="line">    //doSth</span><br><span class="line">&#125;, false);</span><br></pre></td></tr></table></figure>
+<h3 id="服务端使用SSE"><a href="#服务端使用SSE" class="headerlink" title="服务端使用SSE"></a>服务端使用SSE</h3><p>由于使用的是HTTP协议，所以对于服务端基本上没什么太大的改变。唯一注意的就是发送数据使用res.write()即可，断开的时候使用res.end()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">res.writeHead(200, &#123;</span><br><span class="line">      &quot;Content-Type&quot;: &quot;text/event-stream&quot;,</span><br><span class="line">      &quot;Cache-Control&quot;: &quot;no-cache&quot;,</span><br><span class="line">      &quot;Access-Control-Allow-Origin&quot;: &quot;*&quot; //允许跨域</span><br><span class="line">    &#125;);</span><br><span class="line">var num =0;</span><br><span class="line">var f = function()&#123;</span><br><span class="line">   if(num===10)&#123;</span><br><span class="line">      res.end();</span><br><span class="line">   &#125;else&#123;</span><br><span class="line">    res.write(&quot;id: &quot; + num + &quot;\n&quot;);</span><br><span class="line">    res.write(&quot;data: &quot; + num + &quot;\n\n&quot;);</span><br><span class="line">    num++;</span><br><span class="line">   &#125;</span><br><span class="line">   setTimeout(f,1000);</span><br><span class="line">&#125;</span><br><span class="line">f()</span><br></pre></td></tr></table></figure>
+<h2 id="3-SSE和ajax的区别"><a href="#3-SSE和ajax的区别" class="headerlink" title="3. SSE和ajax的区别"></a>3. SSE和ajax的区别</h2><ul>
+<li>数据类型不同: SSE 只能接受 type/event-stream 类型，AJAX 可以接受任意类型；</li>
+<li>结束机制不同: 虽然使用AJAX长轮询也可以实现这样的效果，但是服务器端(以nodeJS为例)必须在一定时间内执行res.end()才行。而SSE只需要执行res.write() 即可</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/短轮询、长轮询/" rel="tag"># 短轮询、长轮询</a>
+          
+            <a href="/tags/Comet/" rel="tag"># Comet</a>
+          
+            <a href="/tags/SSE/" rel="tag"># SSE</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/09/Service Worker/" rel="next" title="Service Worker">
+                <i class="fa fa-chevron-left"></i> Service Worker
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/09/WebSocket/" rel="prev" title="深入浅出WebSocket">
+                深入浅出WebSocket <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">愿你努力之事皆有所成</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、comet-服务器推送"><span class="nav-number">1.</span> <span class="nav-text">一、comet 服务器推送</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#短轮询-轮询"><span class="nav-number">1.1.</span> <span class="nav-text">短轮询/轮询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两种实现Comet的方法"><span class="nav-number">1.2.</span> <span class="nav-text">两种实现Comet的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-长轮询"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 长轮询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-HTTP流"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. HTTP流</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、SSE-服务器发送事件-Server-Sent-Events"><span class="nav-number">2.</span> <span class="nav-text">二、SSE 服务器发送事件(Server Sent Events)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-SSE的API"><span class="nav-number">2.1.</span> <span class="nav-text">1. SSE的API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-事件流"><span class="nav-number">2.2.</span> <span class="nav-text">2. 事件流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端使用SSE"><span class="nav-number">2.2.1.</span> <span class="nav-text">服务端使用SSE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-SSE和ajax的区别"><span class="nav-number">2.3.</span> <span class="nav-text">3. SSE和ajax的区别</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
