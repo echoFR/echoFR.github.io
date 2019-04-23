@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Event Loop,事件循环机制,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Event Loop 事件循环机制浏览器1. micro task 微任务nextTick、callback、Promise、process.nextTick (node)、Object.observer (废除)、MutationObserver (H5) 2. macro task 宏任务setTimeout、setInterval、I/O、script代码块、UI rendering、set">
+<meta name="keywords" content="Event Loop,事件循环机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Event Loop 事件循环机制">
+<meta property="og:url" content="http://yoursite.com/2019/04/23/事件循环机制/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="Event Loop 事件循环机制浏览器1. micro task 微任务nextTick、callback、Promise、process.nextTick (node)、Object.observer (废除)、MutationObserver (H5) 2. macro task 宏任务setTimeout、setInterval、I/O、script代码块、UI rendering、set">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-23T10:32:35.698Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Event Loop 事件循环机制">
+<meta name="twitter:description" content="Event Loop 事件循环机制浏览器1. micro task 微任务nextTick、callback、Promise、process.nextTick (node)、Object.observer (废除)、MutationObserver (H5) 2. macro task 宏任务setTimeout、setInterval、I/O、script代码块、UI rendering、set">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/23/事件循环机制/">
+
+
+
+
+
+  <title>Event Loop 事件循环机制 | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/23/事件循环机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Event Loop 事件循环机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:53:42+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Event-Loop-事件循环机制"><a href="#Event-Loop-事件循环机制" class="headerlink" title="Event Loop 事件循环机制"></a>Event Loop 事件循环机制</h1><h2 id="浏览器"><a href="#浏览器" class="headerlink" title="浏览器"></a>浏览器</h2><h3 id="1-micro-task-微任务"><a href="#1-micro-task-微任务" class="headerlink" title="1. micro task 微任务"></a>1. micro task 微任务</h3><p>nextTick、callback、Promise、process.nextTick (node)、Object.observer (废除)、MutationObserver (H5)</p>
+<h3 id="2-macro-task-宏任务"><a href="#2-macro-task-宏任务" class="headerlink" title="2. macro task 宏任务"></a>2. macro task 宏任务</h3><p>setTimeout、setInterval、I/O、script代码块、UI rendering、setImmediate (node)</p>
+<h3 id="事件循环的执行过程"><a href="#事件循环的执行过程" class="headerlink" title="事件循环的执行过程"></a>事件循环的执行过程</h3><p>同步代码-微任务-宏任务</p>
+<ul>
+<li>一个事件循环里面有很多个不同的任务队列，每个任务队列都是按照先进先出的顺序执行的。</li>
+<li>首先：一段代码就是一个宏任务，所以执行代码的时候，就是程序进入了主线程，主线程会根据不用的代码分为宏任务、微任务。</li>
+<li>第一次循环：从上到下，遇到同步代码执行，遇到宏任务/微任务放到对应的队列</li>
+<li>事件队列在同步任务执行完成之后，首先会执行nextTick，等nextTick执行完，会先执行微任务，等到微任务队列空了之后，才会去执行宏任务，若中间添加了微任务到到微任务队列，会继续去执行微任务队列，然后再回到宏任务队列，JS引擎存在monitoring进程，会不断监听任务队列</li>
+<li>事件队列严格按照事件先后顺序将任务压入任务栈执行，当执行栈空时，浏览器会不断检查事件队列，若不为空，在每一个任务结束之后，浏览器你会对页面进行渲染</li>
+<li>注意：当从宏任务里面取宏任务时，每执行完一个宏任务都要检查微任务队列是否为空，如果不是空的则会一次性执行完所有的微任务，然后再进入下一个宏任务</li>
+</ul>
+<h3 id="特殊"><a href="#特殊" class="headerlink" title="特殊"></a>特殊</h3><ul>
+<li>优先级</li>
+</ul>
+<ol>
+<li>nextTick &gt; Promise</li>
+<li>Process.nextTick &gt; Promise</li>
+<li>SetTimeout &gt; setTmmediate</li>
+</ol>
+<ul>
+<li>不确定</li>
+</ul>
+<ol>
+<li>setTimeout执行一次，setInterval循环执行。其中setInterval执行的顺序不确定，次数也不确定。</li>
+<li>setTimeout、setTmmediate顺序不确定</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">console.log(&apos;start&apos;)</span><br><span class="line">    Promise.resolve()</span><br><span class="line">      .then(() =&gt; &#123;</span><br><span class="line">        setTimeout(() =&gt; &#123;</span><br><span class="line">          console.log(&apos;out0&apos;)</span><br><span class="line">        &#125;, 0)</span><br><span class="line">        console.log(&apos;promise 1&apos;)</span><br><span class="line">      &#125;)</span><br><span class="line">      .then(() =&gt; &#123;</span><br><span class="line">        console.log(&apos;promise 2&apos;)</span><br><span class="line">        setTimeout(() =&gt; &#123;</span><br><span class="line">          console.log(&apos;out1&apos;)</span><br><span class="line">        &#125;, 0)</span><br><span class="line">      &#125;)</span><br><span class="line"></span><br><span class="line">    setTimeout(() =&gt; &#123;</span><br><span class="line">      console.log(&apos;out2&apos;)</span><br><span class="line">    &#125;, 0)</span><br><span class="line">    Promise.resolve()</span><br><span class="line">      .then(() =&gt; &#123;</span><br><span class="line">        console.log(&apos;promise 3&apos;)</span><br><span class="line">      &#125;)</span><br><span class="line">      .then(() =&gt; &#123;</span><br><span class="line">        console.log(&apos;promise 4&apos;)</span><br><span class="line">        setTimeout(() =&gt; &#123;</span><br><span class="line">          console.log(&apos;out3&apos;)</span><br><span class="line">        &#125;, 0)</span><br><span class="line">      &#125;)</span><br><span class="line">    console.log(&apos;end&apos;);</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">// start end promise1 promise3 promise2 promise4 out2 out0 out1 out3</span><br></pre></td></tr></table></figure>
+<h3 id="async"><a href="#async" class="headerlink" title="async"></a>async</h3><h4 id="1-async做了一件什么事情？"><a href="#1-async做了一件什么事情？" class="headerlink" title="1. async做了一件什么事情？"></a>1. async做了一件什么事情？</h4><p>async将你的函数返回值（自动地）转换为promise对象，不需要显式地返回promise对象</p>
+<h4 id="2-await的作用"><a href="#2-await的作用" class="headerlink" title="2. await的作用"></a>2. await的作用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">async function async1() &#123;</span><br><span class="line">  console.log(&apos;async1&apos;)</span><br><span class="line">  await async2()</span><br><span class="line">  console.log(&apos;async1end&apos;)</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">async function async2() &#123;</span><br><span class="line">  console.log(&apos;async2&apos;)</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">console.log(&apos;start&apos;)</span><br><span class="line">setTimeout(function() &#123;</span><br><span class="line">  console.log(&apos;setTimeout&apos;)</span><br><span class="line">&#125;, 0)</span><br><span class="line"> </span><br><span class="line">async1(); </span><br><span class="line">   </span><br><span class="line">new Promise( function( resolve ) &#123;</span><br><span class="line"> console.log(&apos;promise1&apos;)</span><br><span class="line"> resolve();</span><br><span class="line">&#125; ).then( function() &#123;</span><br><span class="line"> console.log(&apos;promise2&apos;)</span><br><span class="line">&#125; )</span><br><span class="line"> </span><br><span class="line">console.log(&apos;end&apos;)</span><br><span class="line"></span><br><span class="line">// start  async1   async2   promise1  end   promise2  async1end  setTimeout</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>js主线程走到并输出“script start”，由于setTimeout执行的优先级低于主线程上的任务和Promise上的任务所以要等到最后，直到执行<br>async1()函数内，输出“async1 start”，在执行async2()函数输出“async2”，由于走到async2()函数时遇到await，要跳出async1()函<br>数体外，接着代码往下跑，执行new Promise对象，输出“promise1”，new Promise对象进入到Promise队列中，继续往下走，输<br>出“script end”，现在回到async1()函数体内中的await async2()处，由于await后面接着async2()返回的是Promise对象还要再次跳出<br>async1()函数体外继续执行以外的代码，这时候正好有Promise队列中的then需要执行，于是输出“promise2”，剩下没代码可以跑了，<br>setTimeout仍然靠后优先级低，再次回到async1()函数体内，接着执行输出“async1 end”，最后剩下主线程和Promise队列的任务都执行<br>完成了，就输出“setTimeout”</p>
+</blockquote>
+<ul>
+<li>await等待的是右侧的[表达式结果]，如果右侧是一个函数，等待的是右侧函数的返回值，如果右侧的表达式则是右侧的表达式</li>
+<li>await在等待时会让出线程阻塞后面的执行。await的执行顺序为从右到左，会阻塞后面的代码执行，但并不是直接阻塞await的表达式。</li>
+<li>await之后如果不是promise，await会阻塞后面的代码，会先执行async外面的同步代码，等外面的同步代码执行完成在执行async中的代码。</li>
+<li>如果它等到的是一个 promise 对象，await 也会暂停async后面的代码，先执行async外面的同步代码，等着 Promise 对象 fulfilled，然后把 resolve 的参数作为 await 表达式的运算结果。</li>
+</ul>
+<h2 id="nodeJS"><a href="#nodeJS" class="headerlink" title="nodeJS"></a>nodeJS</h2><ul>
+<li>nodejs开始的时候会初始化事件循环，处理脚本，脚本可能会进行异步API调用，定时任务或者process.nextTick()，然后开始事件循环</li>
+<li>在每个阶段完成后，而不是每一个宏任务完成后，微任务队列就会被执行</li>
+</ul>
+<h3 id="六个阶段"><a href="#六个阶段" class="headerlink" title="六个阶段"></a>六个阶段</h3><ol>
+<li>timers(计时器)：执行满足条件的setTimout()和setInterval()的回调</li>
+<li>I/O回调：上一轮循环中的少数I/O callback被延迟到这一阶段执行（系统调用错误，、网络通讯错误回调）</li>
+<li>idle prepare</li>
+<li>poll(轮询)：获取新的I/O事件，nodejs会话当进行阻塞</li>
+<li>check：执行setTmmediate的回调</li>
+<li>close callback：执行close事件的callback</li>
+</ol>
+<h4 id="timer"><a href="#timer" class="headerlink" title="timer"></a>timer</h4><p>timers 阶段会执行 setTimeout 和 setInterval</p>
+<p>一个 timer 指定的时间并不是准确时间，而是在达到这个时间后尽快执行回调，可能会因为系统正在执行别的事务而延迟。</p>
+<p>下限的时间有一个范围：[1, 2147483647] ，如果设定的时间不在这个范围，将被设置为 1。</p>
+<h4 id="I-O"><a href="#I-O" class="headerlink" title="I/O"></a>I/O</h4><p>I/O 阶段会执行除了 close 事件，定时器和 setImmediate 的回调</p>
+<h2 id="idle-prepare"><a href="#idle-prepare" class="headerlink" title="idle, prepare"></a>idle, prepare</h2><p>idle, prepare 阶段内部实现</p>
+<h4 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h4><p>poll 阶段很重要，这一阶段中，系统会做两件事情</p>
+<p>执行到点的定时器<br>执行 poll 队列中的事件<br>并且当 poll 中没有定时器的情况下，会发现以下两件事情</p>
+<p>如果 poll 队列不为空，会遍历回调队列并同步执行，直到队列为空或者系统限制<br>如果 poll 队列为空，会有两件事发生<br>如果有 setImmediate 需要执行，poll 阶段会停止并且进入到 check 阶段执行 setImmediate<br>如果没有 setImmediate 需要执行，会等待回调被加入到队列中并立即执行回调<br>如果有别的定时器需要被执行，会回到 timer 阶段执行回调。</p>
+<h4 id="check"><a href="#check" class="headerlink" title="check"></a>check</h4><p>check 阶段执行 setImmediate</p>
+<h4 id="close-callbacks"><a href="#close-callbacks" class="headerlink" title="close callbacks"></a>close callbacks</h4><p>close callbacks 阶段执行 close 事件</p>
+<p>并且在 Node 中，有些情况下的定时器执行顺序是随机的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">  console.log(&apos;setTimeout&apos;)</span><br><span class="line">&#125;, 0)</span><br><span class="line">setImmediate(() =&gt; &#123;</span><br><span class="line">  console.log(&apos;setImmediate&apos;)</span><br><span class="line">&#125;)</span><br><span class="line">// 这里可能会输出 setTimeout，setImmediate</span><br><span class="line">// 可能也会相反的输出，这取决于性能</span><br><span class="line">// 因为可能进入 event loop 用了不到 1 毫秒，这时候会执行 setImmediate</span><br><span class="line">// 否则会执行 setTimeout</span><br></pre></td></tr></table></figure>
+<p>当然在这种情况下，执行顺序是相同的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var fs = require(&apos;fs&apos;)</span><br><span class="line"></span><br><span class="line">fs.readFile(__filename, () =&gt; &#123;</span><br><span class="line">  setTimeout(() =&gt; &#123;</span><br><span class="line">    console.log(&apos;timeout&apos;)</span><br><span class="line">  &#125;, 0)</span><br><span class="line">  setImmediate(() =&gt; &#123;</span><br><span class="line">    console.log(&apos;immediate&apos;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br><span class="line">// 因为 readFile 的回调在 poll 中执行</span><br><span class="line">// 发现有 setImmediate ，所以会立即跳到 check 阶段执行回调</span><br><span class="line">// 再去 timer 阶段执行 setTimeout</span><br><span class="line">// 所以以上输出一定是 setImmediate，setTimeout</span><br></pre></td></tr></table></figure>
+<p>上面介绍的都是 macrotask 的执行情况，microtask 会在以上每个阶段完成后立即执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">  console.log(&apos;timer1&apos;)</span><br><span class="line"></span><br><span class="line">  Promise.resolve().then(function() &#123;</span><br><span class="line">    console.log(&apos;promise1&apos;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;, 0)</span><br><span class="line"></span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">  console.log(&apos;timer2&apos;)</span><br><span class="line"></span><br><span class="line">  Promise.resolve().then(function() &#123;</span><br><span class="line">    console.log(&apos;promise2&apos;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;, 0)</span><br><span class="line"></span><br><span class="line">// 以上代码在浏览器和 node 中打印情况是不同的</span><br><span class="line">// 浏览器中一定打印 timer1, promise1, timer2, promise2</span><br><span class="line">// node 中可能打印 timer1, timer2, promise1, promise2</span><br><span class="line">// 也可能打印 timer1, promise1, timer2, promise2</span><br></pre></td></tr></table></figure>
+<p>Node 中的 process.nextTick 会先于其他 microtask 执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">  console.log(&apos;timer1&apos;)</span><br><span class="line"></span><br><span class="line">  Promise.resolve().then(function() &#123;</span><br><span class="line">    console.log(&apos;promise1&apos;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;, 0)</span><br><span class="line"></span><br><span class="line">process.nextTick(() =&gt; &#123;</span><br><span class="line">  console.log(&apos;nextTick&apos;)</span><br><span class="line">&#125;)</span><br><span class="line">// nextTick, timer1, promise1</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Event-Loop/" rel="tag"># Event Loop</a>
+          
+            <a href="/tags/事件循环机制/" rel="tag"># 事件循环机制</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/23/this、call、apply、bind/" rel="next" title="this、call、apply、bind">
+                <i class="fa fa-chevron-left"></i> this、call、apply、bind
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/23/浅谈二分查找/" rel="prev" title="浅谈二分查找">
+                浅谈二分查找 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">将喜欢的一切留在身边，这边是努力的意义</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Event-Loop-事件循环机制"><span class="nav-number">1.</span> <span class="nav-text">Event Loop 事件循环机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#浏览器"><span class="nav-number">1.1.</span> <span class="nav-text">浏览器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-micro-task-微任务"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. micro task 微任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-macro-task-宏任务"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. macro task 宏任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事件循环的执行过程"><span class="nav-number">1.1.3.</span> <span class="nav-text">事件循环的执行过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特殊"><span class="nav-number">1.1.4.</span> <span class="nav-text">特殊</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#async"><span class="nav-number">1.1.5.</span> <span class="nav-text">async</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-async做了一件什么事情？"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">1. async做了一件什么事情？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-await的作用"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">2. await的作用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nodeJS"><span class="nav-number">1.2.</span> <span class="nav-text">nodeJS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#六个阶段"><span class="nav-number">1.2.1.</span> <span class="nav-text">六个阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#timer"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">timer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#I-O"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">I/O</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#idle-prepare"><span class="nav-number">1.3.</span> <span class="nav-text">idle, prepare</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#poll"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">poll</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#check"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">check</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#close-callbacks"><span class="nav-number">1.3.0.3.</span> <span class="nav-text">close callbacks</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

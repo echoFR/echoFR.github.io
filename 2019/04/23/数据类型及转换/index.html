@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="类型转换,数据类型,类型检测,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、基本数据类型Null、Undefined、Boolean、String、Number、symbol 其中 JS 的数字类型是浮点类型的，没有整型。并且浮点类型基于 IEEE 754标准实现，在使用中会遇到某些 Bug。 NaN 也属于 number 类型，并且 NaN 不等于自身。 基本类型和引用类型的区别基本数据时按值访问的，可以操作保存在变量中实际的值。引用类型的值保存在内存的对象中。JS">
+<meta name="keywords" content="类型转换,数据类型,类型检测">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据类型及转换">
+<meta property="og:url" content="http://yoursite.com/2019/04/23/数据类型及转换/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="一、基本数据类型Null、Undefined、Boolean、String、Number、symbol 其中 JS 的数字类型是浮点类型的，没有整型。并且浮点类型基于 IEEE 754标准实现，在使用中会遇到某些 Bug。 NaN 也属于 number 类型，并且 NaN 不等于自身。 基本类型和引用类型的区别基本数据时按值访问的，可以操作保存在变量中实际的值。引用类型的值保存在内存的对象中。JS">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-23T10:33:58.541Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据类型及转换">
+<meta name="twitter:description" content="一、基本数据类型Null、Undefined、Boolean、String、Number、symbol 其中 JS 的数字类型是浮点类型的，没有整型。并且浮点类型基于 IEEE 754标准实现，在使用中会遇到某些 Bug。 NaN 也属于 number 类型，并且 NaN 不等于自身。 基本类型和引用类型的区别基本数据时按值访问的，可以操作保存在变量中实际的值。引用类型的值保存在内存的对象中。JS">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/23/数据类型及转换/">
+
+
+
+
+
+  <title>数据类型及转换 | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/23/数据类型及转换/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据类型及转换</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:43:17+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="一、基本数据类型"><a href="#一、基本数据类型" class="headerlink" title="一、基本数据类型"></a>一、基本数据类型</h1><p><strong>Null、Undefined、Boolean、String、Number、symbol</strong></p>
+<p>其中 JS 的数字类型是<strong>浮点类型</strong>的，没有整型。并且浮点类型基于 <strong>IEEE 754</strong>标准实现，在使用中会遇到某些 Bug。</p>
+<p>NaN 也属于 number 类型，并且 NaN 不等于自身。</p>
+<h2 id="基本类型和引用类型的区别"><a href="#基本类型和引用类型的区别" class="headerlink" title="基本类型和引用类型的区别"></a>基本类型和引用类型的区别</h2><p>基本数据时按值访问的，可以操作保存在变量中实际的值。引用类型的值保存在内存的对象中。JS不能直接操作对象的内存空间，实际上是在操作对象的引用而不是实际的对象，引用类型的值是按引用访问的。 </p>
+<ol>
+<li>动态的属性：不能给基本类型的值添加属性，只能给引用类型值动态的添加属性</li>
+<li>复制变量值</li>
+</ol>
+<ul>
+<li>从一个变量向另一个变量复制基本类型的值时，会在变量对象上创建一个新值，然后把该值复制到为新变量分配的位置上。两者完全独立互不影响，后者只是前者的一个副本</li>
+<li>复制引用类型的值时，放入的值是一个指针，指向存储在堆中的一个对象。复制完后，两个变量实际上引用同一个对象。会互相影响</li>
+</ul>
+<ol start="3">
+<li>传递参数：所有函数的参数都是按值传递的<blockquote>
+<p>按值传递时，参数传入的是对象也会按引用来访问同一个对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function setName(obj)&#123;</span><br><span class="line">    obj.name= &apos;fr&apos;</span><br><span class="line">    obj= new Object()</span><br><span class="line">    obj.name= &apos;after&apos;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const person= new Object()</span><br><span class="line">setName(person)</span><br><span class="line">console.log(person.name) // &apos;fr&apos;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ol>
+<p>当函数内部重写obj时，这个变量引用的就是一个局部对象，在函数执行完后立即被销毁</p>
+<h1 id="二、检测数据类型"><a href="#二、检测数据类型" class="headerlink" title="二、检测数据类型"></a>二、检测数据类型</h1><ol>
+<li>typeof</li>
+<li>Object.prototype.toString.call()</li>
+<li>instanceof</li>
+</ol>
+<h2 id="1-typeof"><a href="#1-typeof" class="headerlink" title="1. typeof"></a>1. typeof</h2><p><strong>number、string、boolean、undefined、object、function、symbol</strong></p>
+<ul>
+<li>typeof 对于基本类型，除了 null 都可以显示正确的类型</li>
+<li><strong>没有声明的变量</strong>和<strong>没有初始化的变量</strong>，都会显示 undefined</li>
+<li><strong>typeof NaN=== number</strong></li>
+<li>typeof 对于对象除了函数都会显示 object。另外null也返回object</li>
+</ul>
+<p>因为在 JS 的最初版本中，使用的是 32 位系统，为了性能考虑使用低位存储了变量的类型信息，000 开头代表是对象，然而 null 表示为全零，所以将它错误的判断为 object 。虽然现在的内部类型判断代码已经改变了，但是对于这个 Bug 却是一直流传下来。</p>
+<p>空的对象的引用/空对象指针</p>
+<p>function（函数）也是 JS 的一个内置类型？它实际上是 object 的一个子类型。具体来说，函数是“可调用对象”，它内部有一个 [[Call]] 属性，可以使其被调用。所以用 typeof 区分函数和其他对象是有必要的。</p>
+<h2 id="2-Object-prototype-toString-call"><a href="#2-Object-prototype-toString-call" class="headerlink" title="2. Object.prototype.toString.call"></a>2. Object.prototype.toString.call</h2><p>获得类似 [object Type] 的字符串，14种</p>
+<h2 id="3-instanceof："><a href="#3-instanceof：" class="headerlink" title="3. instanceof："></a>3. instanceof：</h2><p>用来判断一个构造函数的prototype是否在要检查对象的原型链上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">obj instanceof constructor // Object.prototype是否在obj的原型链上</span><br></pre></td></tr></table></figure>
+<p>所用引用类型的值都是Object的实例，所以第二个参数为Object的时候都返回true。当使用instanceof检测基本类型的时候总是返回false</p>
+<h1 id="三、null-和-undefined"><a href="#三、null-和-undefined" class="headerlink" title="三、null 和 undefined"></a>三、null 和 undefined</h1><h2 id="1-区别"><a href="#1-区别" class="headerlink" title="1. 区别"></a>1. 区别</h2><ul>
+<li>null：表示没有对象，即该处不应该有值</li>
+<li>undefined：表示缺少值，没有定义<br>（变量声明未赋值、调用函数时参数没有提供）<h2 id="2-关于检测-undefined-和null"><a href="#2-关于检测-undefined-和null" class="headerlink" title="2. 关于检测 undefined 和null"></a>2. 关于检测 undefined 和null</h2></li>
+</ul>
+<ol>
+<li>检测undefined：typeof(exp) === ‘undefined’</li>
+<li>检测null: </li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if(!exp &amp;&amp; typeof(exp)!==&apos;undefined&apos; &amp;&amp; exp!== 0 )</span><br></pre></td></tr></table></figure>
+<ul>
+<li>nudefined == null //true</li>
+<li>隐式转换：undefined——false、null——0</li>
+<li>Number(undefined) //NaN</li>
+<li>Number(null) //0</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">let a</span><br><span class="line">// 我们也可以这样判断 undefined</span><br><span class="line">a === undefined</span><br><span class="line">// 但是 undefined 不是保留字，能够在低版本浏览器被赋值</span><br><span class="line">let undefined = 1</span><br><span class="line">// 这样判断就会出错</span><br><span class="line">// 所以可以用下面的方式来判断，并且代码量更少</span><br><span class="line">// 因为 void 后面随便跟上一个组成表达式</span><br><span class="line">// 返回就是 undefined</span><br><span class="line">a === void 0</span><br></pre></td></tr></table></figure>
+<h1 id="四、类型转换"><a href="#四、类型转换" class="headerlink" title="四、类型转换"></a>四、类型转换</h1><h2 id="1-转Boolean"><a href="#1-转Boolean" class="headerlink" title="1. 转Boolean"></a>1. 转Boolean</h2><p>在条件判断时，除了 <strong>undefined， null， false， NaN， ‘’， 0， -0</strong>，其他所有值都转为 true，包括所有对象。</p>
+<blockquote>
+<p>可以对任何数据类型的值调用Boolean()，总会返回一个Boolean值。或者if语句</p>
+</blockquote>
+<h1 id="和"><a href="#和" class="headerlink" title="== 和 ==="></a>== 和 ===</h1><ul>
+<li>== 在做比较时，会先做一定的类型转换</li>
+</ul>
+<ol>
+<li>String、Boolean与Number比较时，会转换成Number</li>
+<li>若引用类型与基本类型比较时，引用类型会转换成基本数据类型。</li>
+</ol>
+<ul>
+<li>=== 严格相等，类型相同，值相同</li>
+<li>引用类型之间做比较时，== 与=== 相同，看是否指向同一个对象</li>
+</ul>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><ol>
+<li>区分大小写</li>
+<li>标识符：变量、函数、属性的名字或函数的参数<blockquote>
+<p>第一个字符必须是字母/下划线/美元符号$。其他字符可以是字母、下划线、$或数字。<br>字母也可以包含拓展的ASC2或Unicode字母字符。标识符一般采用驼峰的格式</p>
+</blockquote>
+</li>
+<li>严格模式 strict mode：为JS定义了一种不同的解析和执行模型</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 在整个脚本启用严格模式，在顶部添加</span><br><span class="line">&quot;use strict&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="1）Number类型"><a href="#1）Number类型" class="headerlink" title="1）Number类型"></a>1）Number类型</h3><h4 id="1-八进制"><a href="#1-八进制" class="headerlink" title="1. 八进制"></a>1. 八进制</h4><p>第一位必须是0，然后是0-7，如果字面值中的数值超出了范围，那么前导零会被忽略，后面的数值被当作十进制数值解析</p>
+<h4 id="2-十六进制"><a href="#2-十六进制" class="headerlink" title="2. 十六进制"></a>2. 十六进制</h4><p>前两位必须是0x，后面为0-9及A-F（字母大写、小写都可以）</p>
+<h4 id="3-浮点数值："><a href="#3-浮点数值：" class="headerlink" title="3. 浮点数值："></a>3. 浮点数值：</h4><p>数值中必须包含一个小数点，并且小数点后面必须有一位数字。小数点前面可以没有整数，但不推荐。</p>
+<blockquote>
+<p>保存浮点数值需要的内存空间是保存整数值的两倍，因此JS会不失时机的将浮点数值转换为整数。如果小数点后面没有跟任何数字，那么这个数值就可以作为整数来保存。如果浮点数值本身就是一个整数(1.0)，那么也会被转换为整数</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const num1= 1. //小数点后面没有数字，解析为1</span><br><span class="line">const num2= 10.0 //整数，解析为10</span><br></pre></td></tr></table></figure>
+<p>对于极大/极小的数值，可以用<strong>e表示法</strong>（科学计数法）表示的浮点数值表示。默认情况下，JS会将那些小数点和面带有6个0以上的浮点数值转换为e表示法表示的数值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const num= 3.125e7 //3125000</span><br><span class="line">// 其那面是一个数值。中间是小写/小写的e，后面是10的幂中的指数</span><br></pre></td></tr></table></figure>
+<p>浮点数值最高精度是17位小数，但在进行算术计算时精度远远不如整数。使用基于<strong>IEE754数值</strong>的浮点计算的通病。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0.1+0.2 // 0.3000 0000 0000 00004</span><br></pre></td></tr></table></figure>
+<h4 id="4-数值范围"><a href="#4-数值范围" class="headerlink" title="4. 数值范围"></a>4. 数值范围</h4><ul>
+<li>js能够与表示的最小数值保存在Number.MIN_VALUE中，大多浏览器中是5e-324(-Infinity)</li>
+<li>表示的最大数值保存在Number.MAX_VALUE中，大多浏览器中是1.79769348623157e+308(Infinity)</li>
+<li>如果计算的结果超出的JS的数值范围，那么将自动转换成特殊的<strong>Infinity</strong>值。负数转为-Infinity（负无穷），整数转为Infinity（正无穷）</li>
+</ul>
+<h4 id="5-NaN"><a href="#5-NaN" class="headerlink" title="5. NaN"></a>5. NaN</h4><p>NaN非数值，是一个特殊的数值。这个数值用来表示<strong>一个本来要返回数值的操作数未返回数值的情况（这样就不会抛出错误了）</strong></p>
+<ol>
+<li>任何涉及NaN的操作，都会返回NaN（注意在多步计算中可能导致的问题）</li>
+<li>NaN与任何值都不相等，包括本身</li>
+<li>isNaN()：判断参数是否 ‘不是数值’<blockquote>
+<p>isNaN()在接收到一个值时，会尝试将这个值转换为数值。在基于对象调用isNaN()会先调用对象的valueOf()方法，然后确定该方法返回的值是否可以转换为数值。如果不能，则基于这个返回值再调用toString()方法，再测试返回值</p>
+</blockquote>
+</li>
+</ol>
+<h4 id="6-数值转换"><a href="#6-数值转换" class="headerlink" title="6. 数值转换"></a>6. 数值转换</h4><p>有3个函数可以把非数值转换为数值：Number()，转型函数，可以用于任何类型；parseInt()、parseFloat()，专门用于把字符串转为数值</p>
+<h5 id="Number"><a href="#Number" class="headerlink" title="Number()"></a>Number()</h5><ol>
+<li>数字值：简单的传入和传出 </li>
+<li>Boolean：<strong>true——1</strong>、<strong>false——0</strong></li>
+<li><strong>null——0</strong></li>
+<li><strong>undefined——NaN</strong></li>
+<li>字符串（除了空字符串，其他都会忽略字符富川前面的空格）</li>
+</ol>
+<ul>
+<li><strong>空字符串’’——0</strong></li>
+<li>字符串只包含数字（包括前面带正号/负号），转换为10进制，前导零会忽略（’011’变成11）</li>
+<li>字符串中包含有效的浮点格式，将其转换成对应的浮点数值（前导零会被忽略）</li>
+<li>字符串中包含有效的十六进制格式，将其转换为相同大小的十进制整数（’0x10变成16’）</li>
+<li>其余——NaN（’0b’——NaN）</li>
+</ul>
+<ol start="6">
+<li>对象<blockquote>
+<p>先调用对象的valueOf()方法，然后用上面的方法确定该方法返回的值是否可以转换为数值。如果不能，则基于这个返回值再调用toString()方法，再用上面的方法</p>
+</blockquote>
+</li>
+</ol>
+<p><strong>一元加++、–、+（正）、-（负） 操作符的操作与Number相同</strong></p>
+<h4 id="paresInt"><a href="#paresInt" class="headerlink" title="paresInt()"></a>paresInt()</h4><p>parseInt 函数将其第一个参数转换为字符串，解析它，并返回一个整数或NaN。如果不是NaN，返回的值将是作为指定基数（基数）中的数字的第一个参数的整数。</p>
+<p>忽略字符串前面的空格，直到找到第一个非空格字符。如果第一个字符<strong>不是数字字符或者负号，返回NaN</strong>。如果第一个字符是数字字符，会继续解析第二个字符，<strong>直到解析完所有后续字符或者遇到了一个非数字字符</strong>（遇到非数字字符时忽略后面的）。</p>
+<ul>
+<li>parseInt()将空字符串’’转为NaN，而Number()转为0</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&apos;&apos; —— NaN</span><br><span class="line">&apos;123blue&apos; —— 123</span><br><span class="line">&apos;22.5&apos; —— 22</span><br><span class="line">// 小数点不是有效的数字字符</span><br></pre></td></tr></table></figure>
+<p>parseInt()能够识别出各种整数格式（十进制/八进制/十六进制），如果字符串以’0x’开头且后面跟着数字字符，就会当做一个十六进制数来解析</p>
+<p>‘0’开头当做八进制数解析，但是在JS5中不具有解析八进制的能力，<strong>前导零会被忽略</strong>，当做一个十进制数来解析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos;0xf&apos; —— 15</span><br></pre></td></tr></table></figure>
+<h2 id="第二个参数，指定基数"><a href="#第二个参数，指定基数" class="headerlink" title="第二个参数，指定基数"></a>第二个参数，指定基数</h2><p>一个介于2和36之间的整数(数学系统的基础)，表示上述字符串的基数。<br>默认基数是10</p>
+<h2 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h2><p>返回解析后的整数值。 如果被解析参数的第一个字符无法被转化成数值类型，则返回 NaN。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">parseInt(字符串,进制)</span><br><span class="line">// 字符串前面可以不带&apos;0x&apos;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">parseInt(&apos;af&apos;) // NaN</span><br><span class="line">parseInt(&apos;af&apos;, 16) // 175</span><br></pre></td></tr></table></figure>
+<p>如果 parseInt 遇到了不属于radix参数所指定的基数中的字符那么该字符和其后的字符都将被忽略。接着返回已经解析的整数部分。parseInt 将截取整数部分。开头和结尾的空白符允许存在，会被忽略。</p>
+<p>在基数为 undefined，或者基数为 0 或者没有指定的情况下，JavaScript 作如下处理：</p>
+<ul>
+<li>如果字符串 string 以”0x”或者”0X”开头, 则基数是16 (16进制).</li>
+<li>如果字符串 string 以”0”开头, 基数是8（八进制）或者10（十进制），那么具体是哪个基数由实现环境决定。ECMAScript 5 规定使用10，但是并不是所有的浏览器都遵循这个规定。因此，永远都要明确给出radix参数的值。</li>
+<li>如果字符串 string 以其它任何值开头，则基数是10 (十进制)。<br>如果第一个字符不能被转换成数字，parseInt返回NaN。</li>
+</ul>
+<h4 id="paresFloat"><a href="#paresFloat" class="headerlink" title="paresFloat()"></a>paresFloat()</h4><ul>
+<li>字符串中的第一个小数点是有效的。</li>
+<li>十六进制格式的字符串始终会被转换成0</li>
+<li>因为parseFloat值解析十进制值，因此没有用第二个参数指定基数的用法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">parseFloat(&apos;0xf&apos;) //0</span><br><span class="line">parseFloat(&apos;0908.5&apos;) //908.5</span><br><span class="line">parseFloat(&apos;3.125e7&apos;) //31250000</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[&apos;1&apos;,&apos;2&apos;,&apos;3&apos;].map(parseInt)</span><br><span class="line">//  parseInt(&apos;1&apos;, 0) -&gt; 1</span><br><span class="line">//  parseInt(&apos;2&apos;, 1) -&gt; NaN</span><br><span class="line">//  parseInt(&apos;3&apos;, 2) -&gt; NaN</span><br><span class="line"></span><br><span class="line">// 后面两个不在范围内</span><br></pre></td></tr></table></figure>
+<h3 id="2）String类型"><a href="#2）String类型" class="headerlink" title="2）String类型"></a>2）String类型</h3><p>String类型用于表示由0或多个16位Unicode字符组成的字符序列</p>
+<ol>
+<li>字符字面量：转义字符，用于非打印字符</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">\n 换行     \b 退格</span><br><span class="line">\t 制表     \r 回车</span><br><span class="line">\f 进纸     \\ 斜杠</span><br><span class="line">\&apos; 单引号，在用单引号表示的字符串中使用</span><br><span class="line">\&quot; 双引号，在用双引号表示的字符串中使用</span><br><span class="line">\xnn 以十六进制代码nn表示的一个字符(0-f)</span><br><span class="line">\unnnn 以十六进制代码nnnn表示的一个Unicode字符(0-f)</span><br><span class="line"></span><br><span class="line">&apos;he said, \&apos;hey.\&apos;&apos;</span><br><span class="line">&quot;he said, \&quot;hey.\&quot;&quot;</span><br><span class="line">\x41 表示A</span><br><span class="line">\u03a3 表示希腊字符Σ</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>str.length<blockquote>
+<p>如果字符串中包含双字节字符，length可能不会精确的返回字符串中的字符数目</p>
+</blockquote>
+</li>
+<li>转换为字符串<h4 id="value-toString"><a href="#value-toString" class="headerlink" title="value.toString()"></a>value.toString()</h4>返回相应值的字符串表现，数值、布尔、对象、字符串都有toString()方法，但<strong>null、undefined没有toString()方法</strong></li>
+<li>也可以传入一个参数：<strong>输出数值的基数</strong>。默认情况下，toSting()以十进制格式返回数值的字符串表示。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const num=10</span><br><span class="line">num.toString()  //10  num.toString(10)</span><br><span class="line">num.toString(2)  //1010</span><br><span class="line">num.toString(8)  //12</span><br><span class="line">num.toString(16)  //a</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="String-value"><a href="#String-value" class="headerlink" title="String(value)"></a>String(value)</h4><ul>
+<li>如果值有toString方法，则调用该方法（没有参数），并返回结果</li>
+<li>如果值是null，返回’null’</li>
+<li>如果值是undefined，返回’undefined’</li>
+</ul>
+<h3 id="3）Object类型"><a href="#3）Object类型" class="headerlink" title="3）Object类型"></a>3）Object类型</h3><h4 id="Object的每个势力的属性和方法"><a href="#Object的每个势力的属性和方法" class="headerlink" title="Object的每个势力的属性和方法"></a>Object的每个势力的属性和方法</h4><ol>
+<li><strong>constructor</strong>：保存着创建当前对象的构造函数</li>
+<li><strong>hasOwnProperty(propertyName)</strong>：检查给定的属性在当前实例中是否存在，而不是在实例的原型中</li>
+<li><strong>isPrototypeOf(object)</strong>：检查传入的对象是否是当前对象的原型</li>
+<li>propertyIsEnumerable(propertyName)：检查给定的属性是否能够使用for-in来枚举</li>
+<li>toLocaleString()：返回对象的字符串表示，该字符串与执行环境的地区对应</li>
+<li>toString()：返回对象的字符串</li>
+<li>valueOf()：返回对象的字符串、数值或布尔值表示。通常与toString()方法的返回值相同</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/类型转换/" rel="tag"># 类型转换</a>
+          
+            <a href="/tags/数据类型/" rel="tag"># 数据类型</a>
+          
+            <a href="/tags/类型检测/" rel="tag"># 类型检测</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/23/跨域了解多少/" rel="next" title="跨域了解多少">
+                <i class="fa fa-chevron-left"></i> 跨域了解多少
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/23/JS操作符/" rel="prev" title="JS操作符">
+                JS操作符 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">将喜欢的一切留在身边，这边是努力的意义</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、基本数据类型"><span class="nav-number">1.</span> <span class="nav-text">一、基本数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本类型和引用类型的区别"><span class="nav-number">1.1.</span> <span class="nav-text">基本类型和引用类型的区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、检测数据类型"><span class="nav-number">2.</span> <span class="nav-text">二、检测数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-typeof"><span class="nav-number">2.1.</span> <span class="nav-text">1. typeof</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Object-prototype-toString-call"><span class="nav-number">2.2.</span> <span class="nav-text">2. Object.prototype.toString.call</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-instanceof："><span class="nav-number">2.3.</span> <span class="nav-text">3. instanceof：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、null-和-undefined"><span class="nav-number">3.</span> <span class="nav-text">三、null 和 undefined</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-区别"><span class="nav-number">3.1.</span> <span class="nav-text">1. 区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-关于检测-undefined-和null"><span class="nav-number">3.2.</span> <span class="nav-text">2. 关于检测 undefined 和null</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、类型转换"><span class="nav-number">4.</span> <span class="nav-text">四、类型转换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-转Boolean"><span class="nav-number">4.1.</span> <span class="nav-text">1. 转Boolean</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#和"><span class="nav-number">5.</span> <span class="nav-text">== 和 ===</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-number">6.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1）Number类型"><span class="nav-number">6.0.1.</span> <span class="nav-text">1）Number类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-八进制"><span class="nav-number">6.0.1.1.</span> <span class="nav-text">1. 八进制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-十六进制"><span class="nav-number">6.0.1.2.</span> <span class="nav-text">2. 十六进制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-浮点数值："><span class="nav-number">6.0.1.3.</span> <span class="nav-text">3. 浮点数值：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-数值范围"><span class="nav-number">6.0.1.4.</span> <span class="nav-text">4. 数值范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-NaN"><span class="nav-number">6.0.1.5.</span> <span class="nav-text">5. NaN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-数值转换"><span class="nav-number">6.0.1.6.</span> <span class="nav-text">6. 数值转换</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Number"><span class="nav-number">6.0.1.6.1.</span> <span class="nav-text">Number()</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#paresInt"><span class="nav-number">6.0.1.7.</span> <span class="nav-text">paresInt()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二个参数，指定基数"><span class="nav-number">6.1.</span> <span class="nav-text">第二个参数，指定基数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#返回值"><span class="nav-number">6.2.</span> <span class="nav-text">返回值</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#paresFloat"><span class="nav-number">6.2.0.1.</span> <span class="nav-text">paresFloat()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2）String类型"><span class="nav-number">6.2.1.</span> <span class="nav-text">2）String类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#value-toString"><span class="nav-number">6.2.1.1.</span> <span class="nav-text">value.toString()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#String-value"><span class="nav-number">6.2.1.2.</span> <span class="nav-text">String(value)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3）Object类型"><span class="nav-number">6.2.2.</span> <span class="nav-text">3）Object类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Object的每个势力的属性和方法"><span class="nav-number">6.2.2.1.</span> <span class="nav-text">Object的每个势力的属性和方法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

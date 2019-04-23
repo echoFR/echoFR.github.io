@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="操作符,类型转换,全等与相等,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="算术、位、关系、相等操作符 一元操作符++、–、+、-12const f=1.1f-- // 0.000000000000009 浮点舍入错误 位操作符按内存中表示数值的位来操作数值。JS中的所有数值都以IEE754 64位格式存储，但位操作符并不直接操作64位的值。而是先将64位的值转换成32位的整数，然后执行操作，最后再将结果转换为64位。  在这个转换过程中，也会导致一个严重的负效应。对特殊">
+<meta name="keywords" content="操作符,类型转换,全等与相等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS操作符">
+<meta property="og:url" content="http://yoursite.com/2019/04/23/JS操作符/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="算术、位、关系、相等操作符 一元操作符++、–、+、-12const f=1.1f-- // 0.000000000000009 浮点舍入错误 位操作符按内存中表示数值的位来操作数值。JS中的所有数值都以IEE754 64位格式存储，但位操作符并不直接操作64位的值。而是先将64位的值转换成32位的整数，然后执行操作，最后再将结果转换为64位。  在这个转换过程中，也会导致一个严重的负效应。对特殊">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-23T10:31:42.517Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JS操作符">
+<meta name="twitter:description" content="算术、位、关系、相等操作符 一元操作符++、–、+、-12const f=1.1f-- // 0.000000000000009 浮点舍入错误 位操作符按内存中表示数值的位来操作数值。JS中的所有数值都以IEE754 64位格式存储，但位操作符并不直接操作64位的值。而是先将64位的值转换成32位的整数，然后执行操作，最后再将结果转换为64位。  在这个转换过程中，也会导致一个严重的负效应。对特殊">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/23/JS操作符/">
+
+
+
+
+
+  <title>JS操作符 | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/23/JS操作符/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JS操作符</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:44:06+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>算术、位、关系、相等操作符</p>
+<h2 id="一元操作符"><a href="#一元操作符" class="headerlink" title="一元操作符"></a>一元操作符</h2><p>++、–、+、-<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const f=1.1</span><br><span class="line">f-- // 0.000000000000009 浮点舍入错误</span><br></pre></td></tr></table></figure></p>
+<h2 id="位操作符"><a href="#位操作符" class="headerlink" title="位操作符"></a>位操作符</h2><p>按内存中表示数值的位来操作数值。JS中的所有数值都以IEE754 64位格式存储，但位操作符并不直接操作64位的值。而是先将64位的值转换成32位的整数，然后执行操作，最后再将结果转换为64位。</p>
+<blockquote>
+<p>在这个转换过程中，也会导致一个严重的负效应。对特殊的NaN和Infinity应用位操作时，这两个值会当做0来处理</p>
+</blockquote>
+<p>有符号的整数，32位中前31位用于表示整数的值，第32位用于表示数值的符号（符号位）</p>
+<ul>
+<li>正数以纯二进制格式存储</li>
+<li>负数是以二进制补码存储（原码-反码-补码）</li>
+</ul>
+<ol>
+<li>按位非NOT （波浪线~）<blockquote>
+<p>本质是操作数的负值-1</p>
+</blockquote>
+</li>
+<li>按位与AND（和好符号&amp;）</li>
+<li>按位或OR (竖线符号|)</li>
+<li>按位异或XOR （插入符号^）：不同为1，相同为0</li>
+<li>左移(&lt;&lt;)：将数值的所有为向左移动指定的位数</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const value= 2  // 等于二进制的10</span><br><span class="line">const newValue= value &lt;&lt; 5</span><br><span class="line">// 等于二进制的10 00000 ，十进制的64</span><br></pre></td></tr></table></figure>
+<p>向左移位后，原数值的右侧多出了5个空位，左移操作会以<strong>0来填充</strong>这些空位。左移操作不会影响操作数的符号位。</p>
+<ol start="6">
+<li>有符号的右移（》》）：将数值向右移动，但保留符号位。有符号的右移与左移恰好相反</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const newValue= 64  //二进制的10 00000</span><br><span class="line">const value= newValue &gt;&gt; 5 //二进制的10，即十进制的2</span><br></pre></td></tr></table></figure>
+<p>有符号的右移在移动过程中也会出现空位，不过这次的空位出现在原数值的左侧、符号位的右侧。此时会用符号位的值来填充所有空位。</p>
+<ol start="7">
+<li>无符号右移（&gt;&gt;&gt;）：对正数来说无符号的右移和有符号的右移相同。但对于负数，无符号右移会将负数的二进制当成正数的二进制码。负数以其绝对值的二进制的补码形式表示，就会导致无符号右移的结果非常大</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const oldValue= -64 //二进制的 26个1 000000</span><br><span class="line">const value= oldValue &gt;&gt;&gt; 5</span><br><span class="line">// 等于十进制的134217726</span><br></pre></td></tr></table></figure>
+<h2 id="布尔操作符"><a href="#布尔操作符" class="headerlink" title="布尔操作符"></a>布尔操作符</h2><ul>
+<li>逻辑非会直接发生转换。</li>
+<li>逻辑与和逻辑或可以应用于任何类型的操作数，在有一个操作数不是布尔值的情况下，逻辑与和逻辑非不一定返回布尔值。</li>
+</ul>
+<ol>
+<li>逻辑非NOT（!）<blockquote>
+<p>逻辑非操作符首先会将他的操作数<strong>转换</strong>为一个布尔值，然后再对其取反</p>
+</blockquote>
+</li>
+<li>逻辑与AND（&amp;&amp;）<blockquote>
+<p>短路操作，如果第一个操作数是false，无论第二个惭怍书是什么值，结果都是false</p>
+</blockquote>
+</li>
+</ol>
+<p>第一个操作数如果转布尔值为false时，则返回第一个操作数（null、NaN、undefined、’’、0、-0）</p>
+<ol start="3">
+<li>逻辑或OR<blockquote>
+<p>短路操作，如果第一个操作数是true，无论第二个惭怍书是什么值，结果都是true</p>
+</blockquote>
+</li>
+</ol>
+<p>第一个操作数如果转布尔值为false时，则返回第而个操作数，如果两个操作数转而不都为false，则返回该操作数（null、NaN、undefined、’’、0、-0）</p>
+<p>可以利用逻辑或来避免为变量赋null/undefined值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const myObject= preferedObject || backupObject</span><br></pre></td></tr></table></figure>
+<h2 id="乘性操作符"><a href="#乘性操作符" class="headerlink" title="乘性操作符"></a>乘性操作符</h2><p>在操作数不为数值的时候会执行自动的类型转换Number()</p>
+<ol>
+<li>乘法*</li>
+</ol>
+<ul>
+<li>有一个操作数是<strong>NaN，则返回NaN</strong></li>
+<li><strong>Infinity * 0 —— NaN</strong></li>
+<li><strong>Infinity * Infinity —— Infinity</strong></li>
+<li>Infinity 与非0数值相乘，结果是<strong>Infinity或-Infinity</strong>，取决于有符号操作数的符号</li>
+<li>如果有一个操作数不是数值，则在后台调用Number()将其转换为数值，然后再用上面的方法</li>
+</ul>
+<ol start="2">
+<li>除法/</li>
+</ol>
+<ul>
+<li>有一个操作数是<strong>NaN，则返回NaN</strong></li>
+<li><strong>Infinity / Infinity —— NaN</strong></li>
+<li><strong>0 / 0 —— NaN</strong></li>
+<li>如果非0的有限数被0除，则结果是Infinity/-Infinity，取决于有符号操作数的符号</li>
+<li>如果是Infinity被任何非0数值除，则结果是Infinity/-Infinity，取决于有符号操作数的符号</li>
+<li>如果有一个操作数不是数值，则在后台调用Number()</li>
+</ul>
+<blockquote>
+<p>如果结果超过了JS数值的范围，则返回Infinity或-Infinity</p>
+</blockquote>
+<ol start="3">
+<li>求模（余数%）</li>
+</ol>
+<ul>
+<li>Infinity/ 有限大的数值——NaN</li>
+<li>Infinity/ Infinity—— NaN</li>
+<li>有限大的数值/ 0——NaN</li>
+<li>有限大的数值/ 无穷大的数值——结果是被除数</li>
+<li>x/0 —— 0</li>
+<li>有一个数不是操作数时，会先调用Number()</li>
+</ul>
+<h2 id="加性操作符"><a href="#加性操作符" class="headerlink" title="加性操作符"></a>加性操作符</h2><ol>
+<li>加法+</li>
+</ol>
+<ul>
+<li>一个操作数是NaN，则返回NaN</li>
+<li>Infinity+Infinity——Infinity</li>
+<li>-Infinity+(-Infinity)—— -Infinity</li>
+<li>Infinity + (-Infinity)—— NaN</li>
+<li>(+0) + (+0) —— +0</li>
+<li>(-0) + (-0) —— -0</li>
+<li>(+0) + (-0) —— +0</li>
+<li>两个操作数都是字符串，则拼接</li>
+<li>一个操作数是字符串，则将另一个操作数转换为字符串，然后再拼接</li>
+<li><strong>如果有一个操作数是对象、数值、布尔，则调用他们的toString得到相应的字符串，然后再按照上面的规则</strong></li>
+</ul>
+<ol start="2">
+<li>减法-</li>
+</ol>
+<ul>
+<li>一个操作数是NaN，则返回NaN</li>
+<li>Infinity-Infinity——NaN</li>
+<li>-Infinity-(-Infinity)—— NaN</li>
+<li>Infinity - (-Infinity)—— Infinity</li>
+<li>-Infinity - (Infinity)—— -Infinity</li>
+<li>(+0) - (+0) —— +0</li>
+<li>(-0) - (+0) —— -0</li>
+<li>(-0) - (-0) —— +0</li>
+<li><strong>如果有一个操作数是字符串、布尔、null、undefined，先调用Number()，若转换后为NaN，则结果为NaN，否则按照上面的规则</strong></li>
+<li>如果有一个操作数是对象，则调用对象的ValueOf()，如果得到的是NaN，则结果为NaN。如果对象没有valueOf方法，则调用其toString()方法，并转换为数值</li>
+</ul>
+<h2 id="关系操作符"><a href="#关系操作符" class="headerlink" title="关系操作符"></a>关系操作符</h2><p>&lt;、&gt;、&lt;=、&gt;=、都返回一个布尔值</p>
+<blockquote>
+<p>当关系操作符使用了非数值时，也要进行数据类型的转换</p>
+</blockquote>
+<ul>
+<li>两个操作数都是数值，进行数值的比较</li>
+<li>两个操作数都是字符串，比较<strong>两个字符串对应字符的字符编码值</strong></li>
+<li>一个操作数是数值，则将另一个操作数转换为数值进行比较</li>
+<li>如果一个操作数是对象。调用对象的valueOf()，得到的结果按照上面的规则比较。如果对象没有valueOf方法，则调用toString()</li>
+<li>如果一个操作数是布尔值，则先将其转换为数值，然后再执行比较</li>
+<li>任何操作数与NaN比较时，都是false（无论做哪种比较）</li>
+</ul>
+<blockquote>
+<p>字符串比较对应字符的字符编码，大写字母的字符编码全部&lt;小写字母的字符编码。如果要按照字母表的顺序比较字符串的大小，可以先把两个操作数转换为相同的大/小写格式，然后再比较。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&apos;23&apos; &lt; &apos;3&apos; // true</span><br><span class="line">&apos;23&apos; &lt; 3  // false</span><br><span class="line">&apos;a&apos; &lt; 3   // false  &apos;a&apos;被转为了NaN</span><br><span class="line"></span><br><span class="line">NaN &gt; 2 // false</span><br><span class="line">NaN &lt;= 2 // false</span><br></pre></td></tr></table></figure>
+<h2 id="相等操作符"><a href="#相等操作符" class="headerlink" title="相等操作符"></a>相等操作符</h2><h3 id="1-相等-和不相等"><a href="#1-相等-和不相等" class="headerlink" title="1. 相等== 和不相等 !="></a>1. 相等== 和不相等 !=</h3><p>先转换再比较（强制转换）</p>
+<ul>
+<li>如果有一个操作数是<strong>布尔</strong>时，则在比较相等性之前将其转换为<strong>数值，false-0、true-1</strong></li>
+<li>如果有一个操作数是字符串，另一个操作数是数值，先将<strong>字符串转换为数值</strong></li>
+<li>如果一个操作数是对象，另一个不是，则调用对象的<strong>valueOf</strong>，用得到的基本类型值按照上面的方法判断</li>
+<li><strong>null和undefined相等</strong></li>
+<li>比较相等性之前，不能将null、undefined转换为其他任何值</li>
+<li>有一个操作数是NaN，则相等返回false，不相等返回true（NaN和自身也不相等）</li>
+<li>如果两个操作数都是对象，则比较它们是不是同一个对象。如果两个操作数都指向同一个对象，则相等操作符返回true。否则false</li>
+</ul>
+<h3 id="2-全等-和不全等"><a href="#2-全等-和不全等" class="headerlink" title="2. 全等=== 和不全等 !=="></a>2. 全等=== 和不全等 !==</h3><p>仅比较而不转换</p>
+<h2 id="逗号操作符"><a href="#逗号操作符" class="headerlink" title="逗号操作符"></a>逗号操作符</h2><p>可用于声明多个变量，还可以用于赋值。在用于赋值时，逗号操作符总会返回表达式的最后一项</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var num1=1, num2=2,num3=3</span><br><span class="line"></span><br><span class="line">var num=(5,1,3,0) //0</span><br></pre></td></tr></table></figure>
+<p>在JS中switch中的case可以是常量、变量、表达式。switch语句在比较值的时候用的是<strong>全等操作符</strong>，因此不会发生类型转换。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">switch()&#123;</span><br><span class="line">    case value: </span><br><span class="line">        break;</span><br><span class="line">    default: </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意没有break时，就会执行完当前的case后，继续执行下一个。最后defalt用于在表达式不匹配前面任何一种case情况的时候。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos;a&apos; + + &apos;b&apos; // -&gt; &quot;aNaN&quot;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/操作符/" rel="tag"># 操作符</a>
+          
+            <a href="/tags/类型转换/" rel="tag"># 类型转换</a>
+          
+            <a href="/tags/全等与相等/" rel="tag"># 全等与相等</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/23/数据类型及转换/" rel="next" title="数据类型及转换">
+                <i class="fa fa-chevron-left"></i> 数据类型及转换
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/23/执行上下文、作用域/" rel="prev" title="执行上下文、作用域">
+                执行上下文、作用域 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">将喜欢的一切留在身边，这边是努力的意义</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一元操作符"><span class="nav-number">1.</span> <span class="nav-text">一元操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#位操作符"><span class="nav-number">2.</span> <span class="nav-text">位操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#布尔操作符"><span class="nav-number">3.</span> <span class="nav-text">布尔操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#乘性操作符"><span class="nav-number">4.</span> <span class="nav-text">乘性操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加性操作符"><span class="nav-number">5.</span> <span class="nav-text">加性操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关系操作符"><span class="nav-number">6.</span> <span class="nav-text">关系操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相等操作符"><span class="nav-number">7.</span> <span class="nav-text">相等操作符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-相等-和不相等"><span class="nav-number">7.1.</span> <span class="nav-text">1. 相等== 和不相等 !=</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-全等-和不全等"><span class="nav-number">7.2.</span> <span class="nav-text">2. 全等=== 和不全等 !==</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逗号操作符"><span class="nav-number">8.</span> <span class="nav-text">逗号操作符</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

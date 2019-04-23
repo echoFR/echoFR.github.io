@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SEO,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="SEO搜索引擎在记录网站和自然排名上有一套规则，对这套规则作出相应的优化便称之为 SEO 即 Search Engine Optimization（搜索引擎优化） SEO：搜索引擎优化，一种利用搜索引擎的搜索规则，让网站在搜索引擎中的排名更好 如何优化 扁平化的页面设计，标签不超过3层，太深不利于SEO。网站结构层次越少，越容易被“蜘蛛”抓取，也就容易被收录。 标签语义化 h1-h6 是用于标题类">
+<meta name="keywords" content="SEO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈SEO-搜索引擎优化">
+<meta property="og:url" content="http://yoursite.com/2019/04/23/浅谈SEO-搜索引擎优化/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="SEO搜索引擎在记录网站和自然排名上有一套规则，对这套规则作出相应的优化便称之为 SEO 即 Search Engine Optimization（搜索引擎优化） SEO：搜索引擎优化，一种利用搜索引擎的搜索规则，让网站在搜索引擎中的排名更好 如何优化 扁平化的页面设计，标签不超过3层，太深不利于SEO。网站结构层次越少，越容易被“蜘蛛”抓取，也就容易被收录。 标签语义化 h1-h6 是用于标题类">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-23T10:34:29.502Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅谈SEO-搜索引擎优化">
+<meta name="twitter:description" content="SEO搜索引擎在记录网站和自然排名上有一套规则，对这套规则作出相应的优化便称之为 SEO 即 Search Engine Optimization（搜索引擎优化） SEO：搜索引擎优化，一种利用搜索引擎的搜索规则，让网站在搜索引擎中的排名更好 如何优化 扁平化的页面设计，标签不超过3层，太深不利于SEO。网站结构层次越少，越容易被“蜘蛛”抓取，也就容易被收录。 标签语义化 h1-h6 是用于标题类">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/23/浅谈SEO-搜索引擎优化/">
+
+
+
+
+
+  <title>浅谈SEO-搜索引擎优化 | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/23/浅谈SEO-搜索引擎优化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浅谈SEO-搜索引擎优化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:51:22+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络相关/" itemprop="url" rel="index">
+                    <span itemprop="name">网络相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="SEO"><a href="#SEO" class="headerlink" title="SEO"></a>SEO</h1><p>搜索引擎在记录网站和自然排名上有一套规则，对这套规则作出相应的优化便称之为 SEO 即 Search Engine Optimization（搜索引擎优化）</p>
+<p>SEO：搜索引擎优化，一种利用搜索引擎的搜索规则，让网站在搜索引擎中的排名更好</p>
+<h1 id="如何优化"><a href="#如何优化" class="headerlink" title="如何优化"></a>如何优化</h1><ol>
+<li><strong>扁平化的页面设计</strong>，标签不超过3层，太深不利于SEO。网站结构层次越少，越容易被“蜘蛛”抓取，也就容易被收录。</li>
+<li><strong>标签语义化</strong><blockquote>
+<p>h1-h6 是用于标题类的，<nav>标签是用来设置页面主导航，列表形式的代码使用ul或ol，重要的文字使用strong等</nav></p>
+</blockquote>
+</li>
+<li><strong>title、description和keywords</strong></li>
+</ol>
+<ul>
+<li><title>标题：只强调重点即可，尽量把重要的关键词放在前面，关键词不要重复出现，尽量做到每个页面的<title>标题中不要设置相同的内容</title></title></li>
+<li><meta keywords>标签：关键词</li>
+<li><meta description>标签：网页描述，需要高度概括网页内容</li>
+</ul>
+<ol start="4">
+<li><strong>a标签</strong>：<strong>页内链接</strong>，要加 “<strong>title</strong>” 属性加以说明，让访客和 “蜘蛛” 知道。而<strong>外部链接</strong>，链接到其他网站的，则需要加上<br><strong>rel=”nofollow”</strong> 属性, 告诉 “蜘蛛” 不要爬，因为一旦“蜘蛛”爬了外部链接之后，就不会再回来了。</li>
+<li><strong>img标签添加alt和title属性</strong>，告诉搜索引擎导航的定位，做到即使图片未能正常显示时，用户也能看到提示文字。<blockquote>
+<p>当网络速度很慢，或者图片地址失效的时候，就可以体现出alt属性的作用，他可以让用户在图片没有显示的时候知道这个图片的作用。同时为图片设置高度和宽度，可提高页面的加载速度。</p>
+</blockquote>
+</li>
+<li>尽量不要用JS输出重要内容</li>
+</ol>
+<h2 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h2><p>网站最终都会被输出为 html 页面，这也是搜索引擎能够触及的最小单元之一。当然在传统后端 MVC 直接输出 html 的方法，优化起来相对容易。不过现在前端开发多为单页应用，输出的 html 需要经过 JavaScript 渲染后才能真正的被显示。在单页面应用解决 SEO 上有两种比较常见的方法：</p>
+<ol>
+<li>利用后端渲染，直接输出 html。</li>
+<li>利用 head 中的 meta 相关属性。</li>
+</ol>
+<h2 id="文章范围"><a href="#文章范围" class="headerlink" title="文章范围"></a>文章范围</h2><p>SEO 中 meta 相关内容，在 meta 标签主要有 title、description、keywords 三个地方对 SEO 有帮助</p>
+<p><a href="https://juejin.im/post/5ca53dfb6fb9a05e526d8ab7" target="_blank" rel="noopener">meta</a></p>
+<h2 id="img的alt"><a href="#img的alt" class="headerlink" title="img的alt"></a>img的alt</h2><p>在 SEO（搜索引擎优化）方面 alt 属性 也有一定的作用哦，虽然现在有了 AI 可以识别出图片里面的内容是什么。可是搜索引擎并没有那么聪明哦，它在理解一张图片是什么的时候会去读取 alt 属性，并且配合页面的 title、description 来组织和保存这张图片的信息。这也是为什么在百度、谷歌 搜索关键词时能得到那么多相关图片的原因。</p>
+<h2 id="a标签"><a href="#a标签" class="headerlink" title="a标签"></a>a标签</h2><p>一般的链接结构是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=&quot;https://juejin.im/timeline/frontend&quot; &gt;前端&lt;/a&gt;</span><br></pre></td></tr></table></figure></p>
+<p>其中前端就是文本内容也叫做<strong>锚文本</strong>，通常情况下搜索引擎会通过锚文本来理解<a href="https://juejin.im/timeline/frontend这个页面的内容是什么。为了告诉" target="_blank" rel="noopener">https://juejin.im/timeline/frontend这个页面的内容是什么。为了告诉</a> 爬虫 哪些可以爬取哪些不可以爬取，可以利用 rel属性来指明</p>
+<table>
+<thead>
+<tr>
+<th>rel 值</th>
+<th>解释3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>external</td>
+<td>表示这是一个站外链接</td>
+</tr>
+<tr>
+<td>nofollow</td>
+<td>搜索引擎 不应该 抓取 相关链接 并记录权重。</td>
+</tr>
+<tr>
+<td>noopener、noreferrer</td>
+<td>使得 opener 和 referrer 属性无效，防止 target=”_ blank” 带来钓鱼安全问题</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--PC页面用 alternate 指向移动页面--&gt;</span><br><span class="line">&lt;link rel=&quot;alternate&quot; href=&quot;http://m.abc.com/&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--移动页面用 canonical 指向PC页面--&gt;</span><br><span class="line">&lt;link rel=&quot;canonical&quot; href=&quot;http://www.abc.com/&quot;&gt;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SEO/" rel="tag"># SEO</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/23/节流和防抖/" rel="next" title="节流和防抖">
+                <i class="fa fa-chevron-left"></i> 节流和防抖
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/23/this、call、apply、bind/" rel="prev" title="this、call、apply、bind">
+                this、call、apply、bind <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">将喜欢的一切留在身边，这边是努力的意义</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SEO"><span class="nav-number">1.</span> <span class="nav-text">SEO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何优化"><span class="nav-number">2.</span> <span class="nav-text">如何优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTML"><span class="nav-number">2.1.</span> <span class="nav-text">HTML</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文章范围"><span class="nav-number">2.2.</span> <span class="nav-text">文章范围</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#img的alt"><span class="nav-number">2.3.</span> <span class="nav-text">img的alt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a标签"><span class="nav-number">2.4.</span> <span class="nav-text">a标签</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

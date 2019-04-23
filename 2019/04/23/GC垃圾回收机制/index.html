@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="GC垃圾回收机制,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="js的垃圾收集垃圾回收机制：找出不再继续使用的变量（生命周期结束），然后释放其内存。垃圾回收器会按固定的时间间隔周期性地执行 自动管理：找出不再继续使用的变量，然后释放其占用的内存。垃圾收集器会按照固定的时间间隔周期性地执行此操作。 函数中局部变量的正常生命周期：局部变量只在函数执行的过程中存在  在函数的执行过程中，会为局部变量在栈/堆中分配响应的空间，以便存储它们的值，然后在函数中使用这些变量">
+<meta name="keywords" content="GC垃圾回收机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GC垃圾回收机制">
+<meta property="og:url" content="http://yoursite.com/2019/04/23/GC垃圾回收机制/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="js的垃圾收集垃圾回收机制：找出不再继续使用的变量（生命周期结束），然后释放其内存。垃圾回收器会按固定的时间间隔周期性地执行 自动管理：找出不再继续使用的变量，然后释放其占用的内存。垃圾收集器会按照固定的时间间隔周期性地执行此操作。 函数中局部变量的正常生命周期：局部变量只在函数执行的过程中存在  在函数的执行过程中，会为局部变量在栈/堆中分配响应的空间，以便存储它们的值，然后在函数中使用这些变量">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-23T10:30:00.572Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GC垃圾回收机制">
+<meta name="twitter:description" content="js的垃圾收集垃圾回收机制：找出不再继续使用的变量（生命周期结束），然后释放其内存。垃圾回收器会按固定的时间间隔周期性地执行 自动管理：找出不再继续使用的变量，然后释放其占用的内存。垃圾收集器会按照固定的时间间隔周期性地执行此操作。 函数中局部变量的正常生命周期：局部变量只在函数执行的过程中存在  在函数的执行过程中，会为局部变量在栈/堆中分配响应的空间，以便存储它们的值，然后在函数中使用这些变量">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/23/GC垃圾回收机制/">
+
+
+
+
+
+  <title>GC垃圾回收机制 | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/23/GC垃圾回收机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GC垃圾回收机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-23T17:46:09+08:00">
+                2019-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="js的垃圾收集"><a href="#js的垃圾收集" class="headerlink" title="js的垃圾收集"></a>js的垃圾收集</h1><p>垃圾回收机制：找出不再继续使用的变量（生命周期结束），然后释放其内存。垃圾回收器会按固定的时间间隔周期性地执行</p>
+<p>自动管理：找出不再继续使用的变量，然后释放其占用的内存。垃圾收集器会按照固定的时间间隔周期性地执行此操作。</p>
+<p>函数中局部变量的正常生命周期：局部变量只在函数执行的过程中存在</p>
+<blockquote>
+<p>在函数的执行过程中，会为局部变量在栈/堆中分配响应的空间，以便存储它们的值，然后在函数中使用这些变量，直到函数执行结束，释放内存以供将来使用。垃圾收集器必须跟踪哪个变量有用哪个变量没用，对不再有用的变量加上标记，以便将来回收其占用的内存。用于标记无用变量的策略/垃圾收集的方式：</p>
+</blockquote>
+<h2 id="1-标记清除（常用）"><a href="#1-标记清除（常用）" class="headerlink" title="1. 标记清除（常用）"></a>1. 标记清除（常用）</h2><ul>
+<li>通过翻转某个特殊的位来记录一个变量何时进入环境</li>
+<li>使用一个<strong>进入环境</strong>的变量列表及一个<strong>离开环境</strong>的变量列表来跟踪哪个变量发生了变化</li>
+</ul>
+<p>当变量进入环境时，就将这个变量标记为进入环境，永远不能释放进入环境的变量所占用的内存，当变量离开环境时，将其标记为离开环境</p>
+<h2 id="2-引用计数"><a href="#2-引用计数" class="headerlink" title="2. 引用计数"></a>2. 引用计数</h2><p><strong>跟踪记录每个值被引用的次数</strong></p>
+<p>当声明了一个变量并将一个<strong>引用类型值</strong>赋值给该变量时，则这个值的引用次数就是1，如果同一个值又被赋给另外一个变量，则这个值的引用次数+1。反之，如果包含对这个值引用的变量又取得了另外一个值，则这个值的引用次数-1。当这个值的引用次数变为0时，就说明没有办法再访问这个值了，就可以将其占用的内存回收回来。当垃圾收集器下次再运行时，它就会释放那些引用次数为0的值所占用的内存。</p>
+<h3 id="循环引用的问题"><a href="#循环引用的问题" class="headerlink" title="循环引用的问题"></a>循环引用的问题</h3><p>对象A中包含一个指向对象B的指针，而对象B中也包含一个指向对象A的指针。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function problem()&#123;</span><br><span class="line">    var objA= new Object()</span><br><span class="line">    var objB= new Object()</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="JS中的栈和堆"><a href="#JS中的栈和堆" class="headerlink" title="JS中的栈和堆"></a>JS中的栈和堆</h2><ol>
+<li>栈：基本数据类型<blockquote>
+<p>占据空间小，大小固定、属于被频繁使用的数据</p>
+</blockquote>
+</li>
+<li>堆：引用类型（Object、Array、Function）<blockquote>
+<p>占据空间大，大小不固定。如果存储在栈中，会使程序性能下降。引用数据类型在栈中存了指针。</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h2><p>一块被分配的内存既不能使用，又不能释放，直到浏览器进程结束</p>
+<ul>
+<li>意外的全局变量（使用严格模式可避免）</li>
+<li>闭包</li>
+<li>没有清除对DOM的引用<blockquote>
+<p>在文档树中remove了，但是JS某个对象嗨保留着对元素的引用或者DOM元素被清除而绑定的事件未清除。</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function assignHandler()&#123;</span><br><span class="line">    var element= document.getElementById(&apos;some&apos;)</span><br><span class="line">    element.onclick= function()&#123;</span><br><span class="line">        console.log(id)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function assignHandler()&#123;</span><br><span class="line">    var element= document.getElementById(&apos;some&apos;)</span><br><span class="line">    var id= element.id</span><br><span class="line">    element.onclick= function()&#123;</span><br><span class="line">        console.log(id)</span><br><span class="line">    &#125;</span><br><span class="line">    element.id= null</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="V8-下的垃圾回收机制"><a href="#V8-下的垃圾回收机制" class="headerlink" title="V8 下的垃圾回收机制"></a>V8 下的垃圾回收机制</h1><p>V8 实现了准确式 GC，GC 算法采用了分代式垃圾回收机制。因此，V8 将内存（堆）分为新生代和老生代两部分。</p>
+<h1 id="新生代算法"><a href="#新生代算法" class="headerlink" title="新生代算法"></a>新生代算法</h1><p>新生代中的对象一般存活时间较短，使用 Scavenge GC 算法。</p>
+<p>在新生代空间中，内存空间分为两部分，分别为 From 空间和 To 空间。在这两个空间中，必定有一个空间是使用的，另一个空间是空闲的。新分配的对象会被放入 From 空间中，当 From 空间被占满时，新生代 GC 就会启动了。算法会检查 From 空间中存活的对象并复制到 To 空间中，如果有失活的对象就会销毁。当复制完成后将 From 空间和 To 空间互换，这样 GC 就结束了。</p>
+<h1 id="老生代算法"><a href="#老生代算法" class="headerlink" title="老生代算法"></a>老生代算法</h1><p>老生代中的对象一般存活时间较长且数量也多，使用了两个算法，分别是标记清除算法和标记压缩算法。</p>
+<p>在讲算法前，先来说下什么情况下对象会出现在老生代空间中：</p>
+<p>新生代中的对象是否已经经历过一次 Scavenge 算法，如果经历过的话，会将对象从新生代空间移到老生代空间中。<br>To 空间的对象占比大小超过 25 %。在这种情况下，为了不影响到内存分配，会将对象从新生代空间移到老生代空间中。<br>老生代中的空间很复杂，有如下几个空间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">enum AllocationSpace &#123;</span><br><span class="line">  // TODO(v8:7464): Actually map this space&apos;s memory as read-only.</span><br><span class="line">  RO_SPACE,    // 不变的对象空间</span><br><span class="line">  NEW_SPACE,   // 新生代用于 GC 复制算法的空间</span><br><span class="line">  OLD_SPACE,   // 老生代常驻对象空间</span><br><span class="line">  CODE_SPACE,  // 老生代代码对象空间</span><br><span class="line">  MAP_SPACE,   // 老生代 map 对象</span><br><span class="line">  LO_SPACE,    // 老生代大空间对象</span><br><span class="line">  NEW_LO_SPACE,  // 新生代大空间对象</span><br><span class="line"></span><br><span class="line">  FIRST_SPACE = RO_SPACE,</span><br><span class="line">  LAST_SPACE = NEW_LO_SPACE,</span><br><span class="line">  FIRST_GROWABLE_PAGED_SPACE = OLD_SPACE,</span><br><span class="line">  LAST_GROWABLE_PAGED_SPACE = MAP_SPACE</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在老生代中，以下情况会先启动标记清除算法：</p>
+<p>某一个空间没有分块的时候<br>空间中被对象超过一定限制<br>空间不能保证新生代中的对象移动到老生代中<br>在这个阶段中，会遍历堆中所有的对象，然后标记活的对象，在标记完成后，销毁所有没有被标记的对象。在标记大型对内存时，可能需要几百毫秒才能完成一次标记。这就会导致一些性能上的问题。为了解决这个问题，2011 年，V8 从 stop-the-world 标记切换到增量标志。在增量标记期间，GC 将标记工作分解为更小的模块，可以让 JS 应用逻辑在模块间隙执行一会，从而不至于让应用出现停顿情况。但在 2018 年，GC 技术又有了一个重大突破，这项技术名为并发标记。该技术可以让 GC 扫描和标记对象时，同时允许 JS 运行，你可以点击 该博客 详细阅读。</p>
+<p>清除对象后会造成堆内存出现碎片的情况，当碎片超过一定限制后会启动压缩算法。在压缩过程中，将活的对象像一端移动，直到所有对象都移动完成然后清理掉不需要的内存。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GC垃圾回收机制/" rel="tag"># GC垃圾回收机制</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/23/执行上下文、作用域/" rel="next" title="执行上下文、作用域">
+                <i class="fa fa-chevron-left"></i> 执行上下文、作用域
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/23/函数科里化、/" rel="prev" title="函数科里化">
+                函数科里化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">将喜欢的一切留在身边，这边是努力的意义</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#js的垃圾收集"><span class="nav-number">1.</span> <span class="nav-text">js的垃圾收集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-标记清除（常用）"><span class="nav-number">1.1.</span> <span class="nav-text">1. 标记清除（常用）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-引用计数"><span class="nav-number">1.2.</span> <span class="nav-text">2. 引用计数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#循环引用的问题"><span class="nav-number">1.2.1.</span> <span class="nav-text">循环引用的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JS中的栈和堆"><span class="nav-number">1.3.</span> <span class="nav-text">JS中的栈和堆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存泄漏"><span class="nav-number">1.4.</span> <span class="nav-text">内存泄漏</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#V8-下的垃圾回收机制"><span class="nav-number">2.</span> <span class="nav-text">V8 下的垃圾回收机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#新生代算法"><span class="nav-number">3.</span> <span class="nav-text">新生代算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#老生代算法"><span class="nav-number">4.</span> <span class="nav-text">老生代算法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
