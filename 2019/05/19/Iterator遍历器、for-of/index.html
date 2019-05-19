@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Iterator遍历器,for...of与for...in,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Iterator 遍历器遍历器Iterater是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署 Iterator 接口，就可以完成遍历操作 Iterator 的遍历过程：  创建一个指针对象，指向当前数据结构的起始位置。遍历器对象本质上，就是一个指针对象。 每一次调用next方法，都会返回数据结构的当前成员的信息。 也就是返回包含value和done两个属性的对象。valu">
+<meta name="keywords" content="Iterator遍历器,for...of与for...in">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Iterator遍历器、for...of">
+<meta property="og:url" content="http://yoursite.com/2019/05/19/Iterator遍历器、for-of/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="Iterator 遍历器遍历器Iterater是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署 Iterator 接口，就可以完成遍历操作 Iterator 的遍历过程：  创建一个指针对象，指向当前数据结构的起始位置。遍历器对象本质上，就是一个指针对象。 每一次调用next方法，都会返回数据结构的当前成员的信息。 也就是返回包含value和done两个属性的对象。valu">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-19T05:51:28.584Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Iterator遍历器、for...of">
+<meta name="twitter:description" content="Iterator 遍历器遍历器Iterater是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署 Iterator 接口，就可以完成遍历操作 Iterator 的遍历过程：  创建一个指针对象，指向当前数据结构的起始位置。遍历器对象本质上，就是一个指针对象。 每一次调用next方法，都会返回数据结构的当前成员的信息。 也就是返回包含value和done两个属性的对象。valu">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/19/Iterator遍历器、for-of/">
+
+
+
+
+
+  <title>Iterator遍历器、for...of | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/19/Iterator遍历器、for-of/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Iterator遍历器、for...of</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-19T13:48:45+08:00">
+                2019-05-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ES6/" itemprop="url" rel="index">
+                    <span itemprop="name">ES6</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Iterator-遍历器"><a href="#Iterator-遍历器" class="headerlink" title="Iterator 遍历器"></a>Iterator 遍历器</h1><p>遍历器Iterater是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署 Iterator 接口，就可以完成遍历操作</p>
+<p><strong>Iterator 的遍历过程：</strong></p>
+<ol>
+<li>创建一个指针对象，指向当前数据结构的起始位置。遍历器对象本质上，就是一个指针对象。</li>
+<li>每一次调用<strong>next</strong>方法，都会返回数据结构的当前成员的信息。</li>
+<li>也就是返回包含<strong>value和done</strong>两个属性的对象。value属性是当前成员的值，done属性是一个布尔值，表示遍历是否结束。</li>
+</ol>
+<p>当使用<strong>for…of</strong>循环遍历某种数据结构时，该循环会自动去寻找 Iterator 接口。</p>
+<p>一种数据结构只要部署了 Iterator 接口，我们就称这种数据结构是“可遍历的”（iterable）。</p>
+<p>ES6 规定，默认的 Iterator 接口部署在数据结构的<strong>Symbol.iterator</strong>属性，或者说，一个数据结构只要具有Symbol.iterator属性，就可以认为是“可遍历的”（iterable）。Symbol.iterator属性本身是一个<strong>函数</strong>，就是当前数据结构默认的<strong>遍历器生成函数</strong>。执行这个函数，就会返回一个遍历器。</p>
+<p>至于属性名Symbol.iterator，它是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为 Symbol 的特殊值，所以要放在方括号内</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">const obj = &#123;</span><br><span class="line">  [Symbol.iterator] : function () &#123; // 返回遍历器对象</span><br><span class="line">    return &#123;</span><br><span class="line">      next: function () &#123;   // 该对象具有next方法</span><br><span class="line">        return &#123;</span><br><span class="line">          value: 1,</span><br><span class="line">          done: true</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上面代码中，对象obj是可遍历的（iterable），因为具有Symbol.iterator属性。执行这个属性，会返回一个遍历器对象。该对象的根本特征就是具有next方法。每次调用next方法，都会返回一个代表当前成员的信息对象，具有value和done两个属性。</p>
+<p>ES6 的有些数据结构原生具备 Iterator 接口（比如数组），即不用任何处理，就可以被for…of循环遍历。原因在于，这些数据结构原生部署了Symbol.iterator属性，另外一些数据结构没有（比如对象）。凡是部署了Symbol.iterator属性的数据结构，就称为部署了遍历器接口。调用这个接口，就会返回一个遍历器对象。</p>
+<h2 id="原生具备-Iterator-接口的数据结构"><a href="#原生具备-Iterator-接口的数据结构" class="headerlink" title="原生具备 Iterator 接口的数据结构"></a>原生具备 Iterator 接口的数据结构</h2><p>原生部署了Symbol.iterator属性的数据结构。</p>
+<p><strong>Array、Set、Map、String、函数arguments对象、Generator 对象、NodeList对象、TypedArray</strong></p>
+<p>Symbol.iterator属性本身是一个函数，就是当前数据结构默认的遍历器生成函数。执行这个函数，就会返回一个遍历器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let arr = [&apos;a&apos;, &apos;b&apos;, &apos;c&apos;];</span><br><span class="line">let iter = arr[Symbol.iterator]();</span><br><span class="line"></span><br><span class="line">iter.next() // &#123; value: &apos;a&apos;, done: false &#125;</span><br></pre></td></tr></table></figure></p>
+<p>对于原生部署 Iterator 接口的数据结构，不用自己写遍历器生成函数，for…of循环会自动遍历它们。除此之外，其他数据结构（主要是对象）的 Iterator 接口，都需要自己在Symbol.iterator属性上面部署，这样才会被for…of循环遍历。</p>
+<p>对象（Object）之所以没有默认部署 Iterator 接口，是因为对象的哪个属性先遍历，哪个属性后遍历是不确定的，需要开发者手动指定。本质上，遍历器是一种线性处理，对于任何非线性的数据结构，部署遍历器接口，就等于部署一种线性转换。不过，严格地说，对象部署遍历器接口并不是很必要，因为这时对象实际上被当作 <strong>Map</strong> 结构使用，ES5 没有 Map 结构，而 ES6 原生提供了。</p>
+<p>如果Symbol.iterator方法对应的不是遍历器生成函数（即会返回一个遍历器对象），解释引擎将会报错。</p>
+<h2 id="默认调用Iterator接口"><a href="#默认调用Iterator接口" class="headerlink" title="默认调用Iterator接口"></a>默认调用Iterator接口</h2><ol>
+<li><strong>数组和Set进行解构赋值时</strong>，会默认调用Symbol.iterator方法</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">let set = new Set().add(&apos;a&apos;).add(&apos;b&apos;).add(&apos;c&apos;);</span><br><span class="line"></span><br><span class="line">let [x,y] = set;</span><br><span class="line">// x=&apos;a&apos;; y=&apos;b&apos;</span><br><span class="line"></span><br><span class="line">let [first, ...rest] = set;</span><br><span class="line">// first=&apos;a&apos;; rest=[&apos;b&apos;,&apos;c&apos;];</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><strong>拓展运算符</strong>：只要某个数据结构部署了 Iterator 接口，就可以对它使用扩展运算符，<strong>将其转为数组</strong>。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let arr = [...iterable];</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><strong>yield*</strong>：任何数据对象只要有Iterator接口，就可以被yield*遍历</li>
+<li>由于数组的遍历会调用遍历器接口，所以任何接受数组作为参数的场合，其实都调用了遍历器接口</li>
+</ol>
+<ul>
+<li>for…of</li>
+<li>Array.from()</li>
+<li>Map()、Set()、WeakMap()、WeakSet()</li>
+<li>Promise.all()</li>
+<li>Promise.race()</li>
+</ul>
+<p>也可以将 Generator 函数返回的 Iterator 对象，作为参数。不用手动调用next方法</p>
+<h2 id="字符串的Iterator接口"><a href="#字符串的Iterator接口" class="headerlink" title="字符串的Iterator接口"></a>字符串的Iterator接口</h2><p>字符串是一个类似数组的对象，也原生具有 Iterator 接口。</p>
+<h2 id="iterater与generater函数"><a href="#iterater与generater函数" class="headerlink" title="iterater与generater函数"></a>iterater与generater函数</h2><p><strong>Symbol.iterater的简单实现，可以利用generater函数</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">let obj = &#123;</span><br><span class="line">  [Symbol.iterator]: function* () &#123;</span><br><span class="line">    yield &apos;hello&apos;;</span><br><span class="line">    yield &apos;world&apos;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let obj = &#123;</span><br><span class="line">  * [Symbol.iterator]() &#123;</span><br><span class="line">    yield &apos;hello&apos;;</span><br><span class="line">    yield &apos;world&apos;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="遍历器对象的return、throw方法"><a href="#遍历器对象的return、throw方法" class="headerlink" title="遍历器对象的return、throw方法"></a>遍历器对象的return、throw方法</h2><p>遍历器对象除了具有next方法，还可以具有return方法和throw方法。如果你自己写遍历器对象生成函数，那么next方法是必须部署的，return方法和throw方法是否部署是可选的。</p>
+<p>return方法的使用场合是，如果for…of循环提前退出（通常是因为出错，或者有break语句），就会调用return方法。如果一个对象在完成遍历前，需要清理或释放资源，就可以部署return方法。</p>
+<p>throw一般配合generater函数使用</p>
+<h1 id="for…of"><a href="#for…of" class="headerlink" title="for…of"></a>for…of</h1><p>一个数据结构只要部署了Symbol.iterator属性，就被视为具有 iterator 接口，就可以用for…of循环遍历它的成员。也就是说，for…of循环内部调用的是数据结构的Symbol.iterator方法。</p>
+<p><strong>Array、Set、Map、String、函数arguments对象、Generator 对象、NodeList对象、TypedArray</strong><br>都是原生默认有Symbol.Iterator属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">const arr = [&apos;red&apos;, &apos;green&apos;, &apos;blue&apos;];</span><br><span class="line"></span><br><span class="line">for(let v of arr) &#123;</span><br><span class="line">  console.log(v); // red green blue</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const obj = &#123;&#125;;</span><br><span class="line">obj[Symbol.iterator] = arr[Symbol.iterator].bind(arr);</span><br><span class="line"></span><br><span class="line">for(let v of obj) &#123;</span><br><span class="line">  console.log(v); // red green blue</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>for…of循环可以代替数组实例的forEach()</strong></p>
+<h3 id="for…of遍历Set、Map"><a href="#for…of遍历Set、Map" class="headerlink" title="for…of遍历Set、Map"></a>for…of遍历Set、Map</h3><p>遍历的顺序是按照各个成员被添加进数据结构的顺序。</p>
+<p>Set 结构遍历时，返回的是一个值，而 Map 结构遍历时，返回的是一个数组，该数组的两个成员分别为当前 Map 成员的键名和键值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">var engines = new Set([&quot;Gecko&quot;, &quot;Trident&quot;, &quot;Webkit&quot;, &quot;Webkit&quot;]);</span><br><span class="line">for (var e of engines) &#123;</span><br><span class="line">  console.log(e);</span><br><span class="line">&#125;</span><br><span class="line">// Gecko</span><br><span class="line">// Trident</span><br><span class="line">// Webkit</span><br><span class="line"></span><br><span class="line">var es6 = new Map();</span><br><span class="line">es6.set(&quot;edition&quot;, 6);</span><br><span class="line">es6.set(&quot;committee&quot;, &quot;TC39&quot;);</span><br><span class="line">es6.set(&quot;standard&quot;, &quot;ECMA-262&quot;);</span><br><span class="line">for (var [name, value] of es6) &#123;</span><br><span class="line">  console.log(name + &quot;: &quot; + value);</span><br><span class="line">&#125;</span><br><span class="line">// edition: 6</span><br><span class="line">// committee: TC39</span><br><span class="line">// standard: ECMA-262</span><br></pre></td></tr></table></figure>
+<h2 id="计算生成的数据结构"><a href="#计算生成的数据结构" class="headerlink" title="计算生成的数据结构"></a>计算生成的数据结构</h2><p>有些数据结构是在现有数据结构的基础上，计算生成的。比如，ES6 的数组、Set、Map 都部署了以下三个方法，调用后都返回遍历器对象。</p>
+<ul>
+<li><strong>entries()</strong> 返回一个遍历器对象，用来遍历[键名, 键值]组成的数组。对于数组，键名就是索引值；对于Set，键名与键值相同。Map 结构的 Iterator 接口，默认就是调用entries方法。</li>
+<li><strong>keys()</strong> 返回一个遍历器对象，用来遍历所有的键名。</li>
+<li><strong>values()</strong> 返回一个遍历器对象，用来遍历所有的键值。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">let arr = [&apos;a&apos;, &apos;b&apos;, &apos;c&apos;];</span><br><span class="line">for (let pair of arr.entries()) &#123;</span><br><span class="line">  console.log(pair);</span><br><span class="line">&#125;</span><br><span class="line">// [0, &apos;a&apos;]</span><br><span class="line">// [1, &apos;b&apos;]</span><br><span class="line">// [2, &apos;c&apos;]</span><br></pre></td></tr></table></figure>
+<h3 id="类似数组的对象"><a href="#类似数组的对象" class="headerlink" title="类似数组的对象"></a>类似数组的对象</h3><p>字符串、DOM NodeList 对象、arguments对象：</p>
+<ul>
+<li>对于字符串来说，for…of循环还有一个特点，就是会正确识别 32 位 UTF-16 字符。</li>
+<li>并不是所有类似数组的对象都具有 Iterator 接口，一个简便的解决方法，就是使用Array.from方法将其转为数组。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">let arrayLike = &#123; length: 2, 0: &apos;a&apos;, 1: &apos;b&apos; &#125;;</span><br><span class="line"></span><br><span class="line">// 报错</span><br><span class="line">for (let x of arrayLike) &#123;</span><br><span class="line">  console.log(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 正确</span><br><span class="line">for (let x of Array.from(arrayLike)) &#123;</span><br><span class="line">  console.log(x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h3><p>对于普通的对象，for…of结构不能直接使用，会报错，必须部署了 Iterator 接口后才能使用。但是，这样情况下，for…in循环依然可以用来遍历键名。</p>
+<ol>
+<li>使用<strong>Object.keys</strong>方法将对象的键名生成一个数组，然后遍历这个数组。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for (var key of Object.keys(someObject)) &#123;</span><br><span class="line">  console.log(key + &apos;: &apos; + someObject[key]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><strong>使用generater将对象包装</strong></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">function* entries(obj) &#123;</span><br><span class="line">  for (let key of Object.keys(obj)) &#123;</span><br><span class="line">    yield [key, obj[key]];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">for (let [key, value] of entries(obj)) &#123;</span><br><span class="line">  console.log(key, &apos;-&gt;&apos;, value);</span><br><span class="line">&#125;</span><br><span class="line">// a -&gt; 1</span><br><span class="line">// b -&gt; 2</span><br><span class="line">// c -&gt; 3</span><br></pre></td></tr></table></figure>
+<h2 id="与其他遍历语法比较"><a href="#与其他遍历语法比较" class="headerlink" title="与其他遍历语法比较"></a>与其他遍历语法比较</h2><p>对于数组：</p>
+<ol>
+<li>最原始的：for循环遍历</li>
+<li>内置的forEach()：无法中途跳出循环（break、return都不行）</li>
+<li>for…in可以遍历数组的键名key</li>
+</ol>
+<ul>
+<li>数组的键名是数字，但是for…in是以number对应字符作为索引遍历的</li>
+<li>for…in不仅遍历数字键名，还会遍历手动添加的所有键，甚至包括原型上的键</li>
+<li>某些情况下，for…in会以任意顺序遍历</li>
+</ul>
+<p>总之，for…in循环主要是为遍历对象而设计的，不适用于遍历数组。</p>
+<ol start="4">
+<li>for…of：可以与break、continue和return配合使用。</li>
+</ol>
+<h4 id="for…of和for…in的区别"><a href="#for…of和for…in的区别" class="headerlink" title="for…of和for…in的区别"></a>for…of和for…in的区别</h4><ol>
+<li>for…in循环，只能获得对象或数组的键名key，不能直接获取键值</li>
+<li>for…of循环，允许遍历获得键值value</li>
+<li>for…in不仅遍历数字键名，还会遍历手动添加的所有键，甚至包括原型上的键。for…of只能遍历数字键名</li>
+<li>for…of可以配合contine、break、return使用</li>
+</ol>
+<p>如果要通过for…of循环，获取数组的索引，可以借助数组实例的entries方法和keys方法</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Iterator遍历器/" rel="tag"># Iterator遍历器</a>
+          
+            <a href="/tags/for-of与for-in/" rel="tag"># for...of与for...in</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/19/Map、解决深拷贝引用问题的利器/" rel="next" title="ES6之Set Map、解决深拷贝引用问题的利器">
+                <i class="fa fa-chevron-left"></i> ES6之Set Map、解决深拷贝引用问题的利器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/19/Generater遍历器对象生成函数/" rel="prev" title="Generater遍历器对象生成函数">
+                Generater遍历器对象生成函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">将喜欢的一切留在身边，这边是努力的意义</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Iterator-遍历器"><span class="nav-number">1.</span> <span class="nav-text">Iterator 遍历器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#原生具备-Iterator-接口的数据结构"><span class="nav-number">1.1.</span> <span class="nav-text">原生具备 Iterator 接口的数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#默认调用Iterator接口"><span class="nav-number">1.2.</span> <span class="nav-text">默认调用Iterator接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串的Iterator接口"><span class="nav-number">1.3.</span> <span class="nav-text">字符串的Iterator接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iterater与generater函数"><span class="nav-number">1.4.</span> <span class="nav-text">iterater与generater函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#遍历器对象的return、throw方法"><span class="nav-number">1.5.</span> <span class="nav-text">遍历器对象的return、throw方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#for…of"><span class="nav-number">2.</span> <span class="nav-text">for…of</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#for…of遍历Set、Map"><span class="nav-number">2.0.1.</span> <span class="nav-text">for…of遍历Set、Map</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#计算生成的数据结构"><span class="nav-number">2.1.</span> <span class="nav-text">计算生成的数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类似数组的对象"><span class="nav-number">2.1.1.</span> <span class="nav-text">类似数组的对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象"><span class="nav-number">2.1.2.</span> <span class="nav-text">对象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与其他遍历语法比较"><span class="nav-number">2.2.</span> <span class="nav-text">与其他遍历语法比较</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#for…of和for…in的区别"><span class="nav-number">2.2.0.1.</span> <span class="nav-text">for…of和for…in的区别</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

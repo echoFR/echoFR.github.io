@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Generater,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Generator 遍历器对象生成函数形式上，Generator 函数是一个普通函数，但是有两个特征  function关键字与函数名之间有一个星号，function与*的位置没有规定 函数体内部使用yield表达式，定义不同的内部状态  1234function* foo(x, y) &amp;#123; ··· &amp;#125; function * foo(x, y) &amp;#123; ··· &amp;#125;">
+<meta name="keywords" content="Generater">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Generater遍历器对象生成函数">
+<meta property="og:url" content="http://yoursite.com/2019/05/19/Generater遍历器对象生成函数/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="Generator 遍历器对象生成函数形式上，Generator 函数是一个普通函数，但是有两个特征  function关键字与函数名之间有一个星号，function与*的位置没有规定 函数体内部使用yield表达式，定义不同的内部状态  1234function* foo(x, y) &amp;#123; ··· &amp;#125; function * foo(x, y) &amp;#123; ··· &amp;#125;">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-19T05:51:27.127Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Generater遍历器对象生成函数">
+<meta name="twitter:description" content="Generator 遍历器对象生成函数形式上，Generator 函数是一个普通函数，但是有两个特征  function关键字与函数名之间有一个星号，function与*的位置没有规定 函数体内部使用yield表达式，定义不同的内部状态  1234function* foo(x, y) &amp;#123; ··· &amp;#125; function * foo(x, y) &amp;#123; ··· &amp;#125;">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/19/Generater遍历器对象生成函数/">
+
+
+
+
+
+  <title>Generater遍历器对象生成函数 | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/19/Generater遍历器对象生成函数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Generater遍历器对象生成函数</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-19T13:50:54+08:00">
+                2019-05-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ES6/" itemprop="url" rel="index">
+                    <span itemprop="name">ES6</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Generator-遍历器对象生成函数"><a href="#Generator-遍历器对象生成函数" class="headerlink" title="Generator 遍历器对象生成函数"></a>Generator 遍历器对象生成函数</h1><p>形式上，Generator 函数是一个普通函数，但是有两个特征</p>
+<ol>
+<li>function关键字与函数名之间有一个星号，function与*的位置没有规定</li>
+<li>函数体内部使用yield表达式，定义不同的内部状态</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">function* foo(x, y) &#123; ··· &#125; </span><br><span class="line">function * foo(x, y) &#123; ··· &#125;</span><br><span class="line">function *foo(x, y) &#123; ··· &#125;</span><br><span class="line">function*foo(x, y) &#123; ··· &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function* helloWorldGenerator() &#123;</span><br><span class="line">  yield &apos;hello&apos;;</span><br><span class="line">  yield &apos;world&apos;;</span><br><span class="line">  return &apos;ending&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var hw = helloWorldGenerator();</span><br><span class="line"></span><br><span class="line">hw.next()</span><br><span class="line">// &#123; value: &apos;hello&apos;, done: false &#125;</span><br><span class="line">hw.next()</span><br><span class="line">// &#123; value: &apos;world&apos;, done: false &#125;</span><br><span class="line">hw.next()</span><br><span class="line">// &#123; value: &apos;ending&apos;, done: true &#125;</span><br><span class="line">hw.next()</span><br><span class="line">// &#123; value: undefined, done: true &#125;</span><br></pre></td></tr></table></figure>
+<p>定义了一个 Generator 函数helloWorldGenerator，它内部有两个yield表达式（hello和world），即该函数有三个状态：hello，world 和 return 语句（结束执行）。</p>
+<p>可以把generater函数理解成一个状态机，封装了多个内部状态</p>
+<h2 id="yield-next"><a href="#yield-next" class="headerlink" title="yield + next"></a>yield + next</h2><p><strong>Generator函数是分段执行的，yield语句是暂停执行的标记，而next方法可以恢复执行</strong></p>
+<p>调用 Generator函数，该函数并不执行，返回的也不是函数运行结果，而是会返回一个<strong>遍历器对象</strong>，是 Generator 函数的内部指针，调用next方法<br>可以依次遍历 Generator 函数内部的每一个状态。<br>Generator函数其实提供了一种可以暂停执行的函数。yield表达式就是暂停标志。</p>
+<p>每次调用遍历器对象的<strong>next</strong>方法，就会返回一个有着value和done两个属性的对象。</p>
+<ul>
+<li>value是当前的<strong>内部状态的值</strong>，是<strong>yield后面那个表达式的值</strong></li>
+<li>done属性是一个布尔值，表示<strong>是否遍历结束</strong></li>
+</ul>
+<p><strong>yield + next 执行步骤</strong></p>
+<ol>
+<li>遇到yield表达式，就<strong>暂停</strong>执行后面的操作，并将紧跟在yield后面的那个<strong>表达式的值</strong>，作为返回的对象的value属性值。</li>
+<li>下一次调用next方法时，从上一次yield表达式停下来的地方，再继续往下执行，直到遇到下一个yield表达式。</li>
+<li>如果没有再遇到新的yield表达式，就一直运行到函数结束，直到return语句为止，并将return语句后面的表达式的值，作为返回的对象的value属性值</li>
+<li>如果该函数没有return语句，则返回的对象的value属性值为undefined。</li>
+</ol>
+<p>Generator 函数可以不用yield表达式，这时就变成了一个单纯的<strong>暂缓执行函数</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(function () &#123;</span><br><span class="line">    let data = &apos;fr&apos;</span><br><span class="line">    function* f() &#123;</span><br><span class="line">        console.log(data)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    var generator = f()</span><br><span class="line">    generator.next()</span><br><span class="line">&#125;, 2000)</span><br></pre></td></tr></table></figure></p>
+<p>yield表达式后面的表达式，只有当调用next方法、内部指针指向该语句时才会执行，因此等于为 JS提供了手动的惰性求值的语法功能</p>
+<p>yield表达式只能用在 Generator 函数里面，用在其他地方都会报错。</p>
+<p>yield表达式如果用在另一个表达式之中，必须放在圆括号里面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function* demo() &#123;</span><br><span class="line">  console.log(&apos;Hello&apos; + yield); // SyntaxError</span><br><span class="line">  console.log(&apos;Hello&apos; + yield 123); // SyntaxError</span><br><span class="line"></span><br><span class="line">  console.log(&apos;Hello&apos; + (yield)); // OK</span><br><span class="line">  console.log(&apos;Hello&apos; + (yield 123)); // OK</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>yield表达式用作函数参数或放在赋值表达式的右边，可以不加括号。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">function* demo() &#123;</span><br><span class="line">  foo(yield &apos;a&apos;, yield &apos;b&apos;); // OK</span><br><span class="line">  let input = yield; // OK</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="next方法的参数"><a href="#next方法的参数" class="headerlink" title="next方法的参数"></a>next方法的参数</h2><p><strong>yield表达式本身没有返回值，或者说总是返回undefined。</strong></p>
+<p><strong>next方法可以带一个参数，该参数就会被当作上一个yield表达式的返回值</strong></p>
+<p>由于next方法的参数表示上一个yield表达式的返回值，所以在<strong>第一次使用next方法时，传递参数是无效的</strong>。第一个next方法用来启动遍历器对象，所以不用带有参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">function* dataConsumer() &#123;</span><br><span class="line">  console.log(&apos;Started&apos;);</span><br><span class="line">  console.log(`1. $&#123;yield&#125;`);</span><br><span class="line">  console.log(`2. $&#123;yield&#125;`);</span><br><span class="line">  return &apos;result&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let genObj = dataConsumer();</span><br><span class="line">genObj.next();</span><br><span class="line">// Started</span><br><span class="line">genObj.next(&apos;a&apos;)</span><br><span class="line">// 1. a</span><br><span class="line">genObj.next(&apos;b&apos;)</span><br><span class="line">// 2. b</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function* foo(x) &#123;</span><br><span class="line">    var y = 2 * (yield (x + 1));</span><br><span class="line">    var z = yield (y / 3);</span><br><span class="line">    return (x + y + z);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var a = foo(5);</span><br><span class="line">a.next() // Object&#123;value:6, done:false&#125;</span><br><span class="line">a.next() // Object&#123;value:NaN, done:false&#125;</span><br><span class="line">a.next() // Object&#123;value:NaN, done:true&#125;</span><br><span class="line"></span><br><span class="line">var b = foo(5);</span><br><span class="line">b.next() // &#123; value:6, done:false &#125;</span><br><span class="line">b.next(12) // &#123; value:8, done:false &#125;</span><br><span class="line">b.next(13) // &#123; value:42, done:true &#125;</span><br><span class="line">// x5 y24 z13</span><br></pre></td></tr></table></figure>
+<h2 id="Generator-prototype-throw"><a href="#Generator-prototype-throw" class="headerlink" title="Generator.prototype.throw()"></a>Generator.prototype.throw()</h2><p>Generator 函数返回的遍历器对象，都有一个throw方法，可以在函数体外抛出错误，然后在 Generator 函数体内捕获</p>
+<p>throw方法可以接受一个参数，该参数会被catch语句接收，建议抛出Error对象的实例。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">var g = function* () &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    yield;</span><br><span class="line">  &#125; catch (e) &#123;</span><br><span class="line">    console.log(&apos;内部捕获&apos;, e);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var i = g();</span><br><span class="line">i.next();</span><br><span class="line"></span><br><span class="line">try &#123;</span><br><span class="line">  i.throw(&apos;a&apos;);</span><br><span class="line">  i.throw(&apos;b&apos;);</span><br><span class="line">&#125; catch (e) &#123;</span><br><span class="line">  console.log(&apos;外部捕获&apos;, e);</span><br><span class="line">&#125;</span><br><span class="line">// 内部捕获 a</span><br><span class="line">// 外部捕获 b</span><br></pre></td></tr></table></figure></p>
+<p>遍历器对象i连续抛出两个错误。第一个错误被 Generator 函数体内的catch语句捕获。i第二次抛出错误，由于 Generator 函数内部的catch语句已经执行过了，不会再捕捉到这个错误了，所以这个错误就被抛出了 Generator 函数体，被函数体外的catch语句捕获</p>
+<h2 id="Generator-prototype-return"><a href="#Generator-prototype-return" class="headerlink" title="Generator.prototype.return()"></a>Generator.prototype.return()</h2><p>Generator 函数返回的遍历器对象，还有一个return方法，可以返回给定的值，并且终结遍历 Generator 函数。</p>
+<p>如果return方法调用时，不提供参数，则返回值的value属性为undefined</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function* gen() &#123;</span><br><span class="line">  yield 1;</span><br><span class="line">  yield 2;</span><br><span class="line">  yield 3;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var g = gen();</span><br><span class="line"></span><br><span class="line">g.next()        // &#123; value: 1, done: false &#125;</span><br><span class="line">g.return(&apos;foo&apos;) // &#123; value: &quot;foo&quot;, done: true &#125;</span><br><span class="line">g.next()        // &#123; value: undefined, done: true &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="与iterater的关系"><a href="#与iterater的关系" class="headerlink" title="与iterater的关系"></a>与iterater的关系</h2><p>任意一个对象的<strong>Symbol.iterator</strong>方法，等于该对象的遍历器生成函数，调用该函数会返回该对象的一个遍历器对象</p>
+<p>Generator 函数就是遍历器生成函数，因此可以把 Generator 赋值给对象的Symbol.iterator属性，从而使得该对象具有 Iterator 接口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var myIterable = &#123;&#125;;</span><br><span class="line">myIterable[Symbol.iterator] = function* () &#123;</span><br><span class="line">  yield 1;</span><br><span class="line">  yield 2;</span><br><span class="line">  yield 3;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">[...myIterable] // [1, 2, 3]</span><br></pre></td></tr></table></figure>
+<p>Generator 函数执行后，返回一个遍历器对象。该对象本身也具有Symbol.iterator属性，执行后返回自身。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">function* gen()&#123;</span><br><span class="line">&#125;</span><br><span class="line">var g = gen()</span><br><span class="line">g[Symbol.iterator]() === g // true</span><br></pre></td></tr></table></figure>
+<h2 id="for…of"><a href="#for…of" class="headerlink" title="for…of"></a>for…of</h2><p>for…of循环可以自动遍历 Generator 函数运行时生成的Iterator对象，且此时不再需要调用next方法。</p>
+<p><strong>一旦next方法的返回对象的done属性为true，for…of循环就会中止，且不包含该返回对象</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function* foo() &#123;</span><br><span class="line">  yield 1;</span><br><span class="line">  yield 2;</span><br><span class="line">  yield 3;</span><br><span class="line">  return 4;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">for (let v of foo()) &#123;</span><br><span class="line">  console.log(v);</span><br><span class="line">&#125;</span><br><span class="line">// 1 2 3</span><br></pre></td></tr></table></figure>
+<ul>
+<li>for..of和generater实现斐波那契数列</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function* fibonacci() &#123;</span><br><span class="line">  let [prev, curr] = [0, 1];</span><br><span class="line">  for (;;) &#123;</span><br><span class="line">    yield curr;</span><br><span class="line">    [prev, curr] = [curr, prev + curr];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">for (let n of fibonacci()) &#123;</span><br><span class="line">  console.log(n);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>利用for…of循环，可以写出遍历任意对象（object）的方法。原生的JS象没有遍历接口，无法使用for…of循环，通过 Generator 函数为它加上这个接口，就可以用了。</p>
+<ol>
+<li>将 Generator 函数返回的 Iterator 对象，作为参数</li>
+<li>将 Generator 函数加到对象的Symbol.iterator属性<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// 1</span><br><span class="line">function* objectEntries(obj) &#123;</span><br><span class="line">  let propKeys = Reflect.ownKeys(obj);</span><br><span class="line"></span><br><span class="line">  for (let propKey of propKeys) &#123;</span><br><span class="line">    yield [propKey, obj[propKey]];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">function* objectEntries() &#123;</span><br><span class="line">  let propKeys = Object.keys(this);</span><br><span class="line">  for (let propKey of propKeys) &#123;</span><br><span class="line">    yield [propKey, this[propKey]];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let jane = &#123; first: &apos;Jane&apos;, last: &apos;Doe&apos; &#125;;</span><br><span class="line">for (let [key, value] of objectEntries(jane)) &#123;</span><br><span class="line">  console.log(`$&#123;key&#125;: $&#123;value&#125;`);</span><br><span class="line">&#125;</span><br><span class="line">// first: Jane</span><br><span class="line">// last: Doe</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>除了for…of循环以外，扩展运算符（…）、解构赋值和Array.from方法内部调用的，都是遍历器接口。这意味着，它们都可以将 Generator 函数返回的 Iterator 对象，作为参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">function* numbers () &#123;</span><br><span class="line">  yield 1</span><br><span class="line">  yield 2</span><br><span class="line">  return 3</span><br><span class="line">  yield 4</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 扩展运算符</span><br><span class="line">[...numbers()] // [1, 2]</span><br><span class="line"></span><br><span class="line">// Array.from 方法</span><br><span class="line">Array.from(numbers()) // [1, 2]</span><br><span class="line"></span><br><span class="line">// 解构赋值</span><br><span class="line">let [x, y] = numbers();</span><br><span class="line">x // 1</span><br><span class="line">y // 2</span><br><span class="line"></span><br><span class="line">// for...of 循环</span><br><span class="line">for (let n of numbers()) &#123;</span><br><span class="line">  console.log(n)</span><br><span class="line">&#125;</span><br><span class="line">// 1</span><br><span class="line">// 2</span><br></pre></td></tr></table></figure>
+<h2 id="yield-表达式"><a href="#yield-表达式" class="headerlink" title="yield* 表达式"></a>yield* 表达式</h2><p>yield* 用来在一个 Generator 函数里面执行另一个 Generator 函数</p>
+<p><strong>任何数据结构只要有 Iterator 接口，就可以被yield*遍历</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">function* foo() &#123;</span><br><span class="line">  yield &apos;a&apos;;</span><br><span class="line">  yield &apos;b&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function* bar() &#123;</span><br><span class="line">  yield &apos;x&apos;;</span><br><span class="line">  yield* foo();</span><br><span class="line">  yield &apos;y&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">for (let v of bar())&#123;</span><br><span class="line">  console.log(v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果yield*后面跟着一个数组，由于数组原生支持遍历器，因此就会遍历数组成员。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function* gen()&#123;</span><br><span class="line">  yield* [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">gen().next() // &#123; value:&quot;a&quot;, done:false &#125;</span><br></pre></td></tr></table></figure>
+<p>yield*命令可以很方便地取出嵌套数组的所有成员</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">function* iterTree(tree) &#123;</span><br><span class="line">  if (Array.isArray(tree)) &#123;</span><br><span class="line">    for(let i=0; i &lt; tree.length; i++) &#123;</span><br><span class="line">      yield* iterTree(tree[i]);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    yield tree;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const tree = [ &apos;a&apos;, [&apos;b&apos;, &apos;c&apos;], [&apos;d&apos;, &apos;e&apos;] ];</span><br><span class="line"></span><br><span class="line">for(let x of iterTree(tree)) &#123;</span><br><span class="line">  console.log(x);</span><br><span class="line">&#125;</span><br><span class="line">// a</span><br><span class="line">// b</span><br><span class="line">// c</span><br><span class="line">// d</span><br><span class="line">// e</span><br></pre></td></tr></table></figure>
+<p>由于扩展运算符…默认调用 Iterator 接口，所以上面这个函数也可以用于嵌套数组的平铺</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[...iterTree(tree)] // [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;]</span><br></pre></td></tr></table></figure>
+<h2 id="作为对象属性的-Generator-函数"><a href="#作为对象属性的-Generator-函数" class="headerlink" title="作为对象属性的 Generator 函数"></a>作为对象属性的 Generator 函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let obj = &#123;</span><br><span class="line">  * myGeneratorMethod() &#123;</span><br><span class="line">    ···</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Generator-函数的this"><a href="#Generator-函数的this" class="headerlink" title="Generator 函数的this"></a>Generator 函数的this</h2><p>Generator 函数也不能跟new命令一起用，会报错。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">function* F() &#123;</span><br><span class="line">  this.a = 1;</span><br><span class="line">  yield this.b = 2;</span><br><span class="line">  yield this.c = 3;</span><br><span class="line">&#125;</span><br><span class="line">var obj = &#123;&#125;;</span><br><span class="line">var f = F.call(obj);</span><br><span class="line"></span><br><span class="line">f.next();  // Object &#123;value: 2, done: false&#125;</span><br><span class="line">f.next();  // Object &#123;value: 3, done: false&#125;</span><br><span class="line">f.next();  // Object &#123;value: undefined, done: true&#125;</span><br><span class="line"></span><br><span class="line">obj.a // 1</span><br><span class="line">obj.b // 2</span><br><span class="line">obj.c // 3</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">function* F() &#123;</span><br><span class="line">  this.a = 1;</span><br><span class="line">  yield this.b = 2;</span><br><span class="line">  yield this.c = 3;</span><br><span class="line">&#125;</span><br><span class="line">var f = F.call(F.prototype);</span><br><span class="line"></span><br><span class="line">f.next();  // Object &#123;value: 2, done: false&#125;</span><br><span class="line">f.next();  // Object &#123;value: 3, done: false&#125;</span><br><span class="line">f.next();  // Object &#123;value: undefined, done: true&#125;</span><br><span class="line"></span><br><span class="line">f.a // 1</span><br><span class="line">f.b // 2</span><br><span class="line">f.c // 3</span><br></pre></td></tr></table></figure>
+<h1 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h1><h2 id="1-异步操作的同步化表达"><a href="#1-异步操作的同步化表达" class="headerlink" title="1. 异步操作的同步化表达"></a>1. 异步操作的同步化表达</h2><p>Generator 函数的暂停执行的效果，意味着可以把异步操作写在yield表达式里面，等到调用next方法时再往后执行。这实际上等同于不需要写回调函数了，因为异步操作的后续操作可以放在yield表达式下面，反正要等到调用next方法时再执行。所以，Generator 函数的一个重要实际意义就是用来处理异步操作，改写回调函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function* loadUI() &#123;</span><br><span class="line">  showLoadingScreen();</span><br><span class="line">  yield loadUIDataAsynchronously();</span><br><span class="line">  hideLoadingScreen();</span><br><span class="line">&#125;</span><br><span class="line">var loader = loadUI();</span><br><span class="line">// 加载UI</span><br><span class="line">loader.next()</span><br><span class="line"></span><br><span class="line">// 卸载UI</span><br><span class="line">loader.next()</span><br></pre></td></tr></table></figure>
+<p>Ajax 是典型的异步操作，通过 Generator 函数部署 Ajax 操作，可以用同步的方式表达。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function* main() &#123;</span><br><span class="line">  var result = yield request(&quot;url&quot;)</span><br><span class="line">    console.log(result)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function request(url) &#123;</span><br><span class="line">  makeAjaxCall(url, function(response)&#123;</span><br><span class="line">    it.next(response)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var it = main()</span><br><span class="line">it.next()</span><br></pre></td></tr></table></figure>
+<h2 id="2-部署-Iterator-接口"><a href="#2-部署-Iterator-接口" class="headerlink" title="2. 部署 Iterator 接口"></a>2. 部署 Iterator 接口</h2><p>利用 Generator 函数，可以在任意对象上部署 Iterator 接口。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function* iterEntries(obj) &#123;</span><br><span class="line">  let keys = Object.keys(obj);</span><br><span class="line">  for (let i=0; i &lt; keys.length; i++) &#123;</span><br><span class="line">    let key = keys[i];</span><br><span class="line">    yield [key, obj[key]];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let myObj = &#123; foo: 3, bar: 7 &#125;;</span><br><span class="line"></span><br><span class="line">for (let [key, value] of iterEntries(myObj)) &#123;</span><br><span class="line">  console.log(key, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// foo 3</span><br><span class="line">// bar 7</span><br></pre></td></tr></table></figure></p>
+<h2 id="3-作为数据结构"><a href="#3-作为数据结构" class="headerlink" title="3. 作为数据结构"></a>3. 作为数据结构</h2><p>Generator 可以看作是一个数组结构，因为 Generator 函数可以返回一系列的值，这意味着它可以对任意表达式，提供类似数组的接口。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Generater/" rel="tag"># Generater</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/19/Iterator遍历器、for-of/" rel="next" title="Iterator遍历器、for...of">
+                <i class="fa fa-chevron-left"></i> Iterator遍历器、for...of
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">将喜欢的一切留在身边，这边是努力的意义</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Generator-遍历器对象生成函数"><span class="nav-number">1.</span> <span class="nav-text">Generator 遍历器对象生成函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#yield-next"><span class="nav-number">1.1.</span> <span class="nav-text">yield + next</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#next方法的参数"><span class="nav-number">1.2.</span> <span class="nav-text">next方法的参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Generator-prototype-throw"><span class="nav-number">1.3.</span> <span class="nav-text">Generator.prototype.throw()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Generator-prototype-return"><span class="nav-number">1.4.</span> <span class="nav-text">Generator.prototype.return()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与iterater的关系"><span class="nav-number">1.5.</span> <span class="nav-text">与iterater的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#for…of"><span class="nav-number">1.6.</span> <span class="nav-text">for…of</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#yield-表达式"><span class="nav-number">1.7.</span> <span class="nav-text">yield* 表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作为对象属性的-Generator-函数"><span class="nav-number">1.8.</span> <span class="nav-text">作为对象属性的 Generator 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Generator-函数的this"><span class="nav-number">1.9.</span> <span class="nav-text">Generator 函数的this</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#应用"><span class="nav-number">2.</span> <span class="nav-text">应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-异步操作的同步化表达"><span class="nav-number">2.1.</span> <span class="nav-text">1. 异步操作的同步化表达</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-部署-Iterator-接口"><span class="nav-number">2.2.</span> <span class="nav-text">2. 部署 Iterator 接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-作为数据结构"><span class="nav-number">2.3.</span> <span class="nav-text">3. 作为数据结构</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
