@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="虚拟DOM,diff算法,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="React首先在内存中对整个结构进行组装，然后把这个结构转换成实际的DOM节点插入到浏览器DOM中。render执行的结果并不是真正的DOM节点，而是轻量的JS对象。React的虚拟对象使两个DOM树对比起来更快，具有批处理和高效Diff算法，找到他们的变化，计算更新DOM所需要做的最小的变更 虚拟DOM 用JS对象模拟DOM 把这个虚拟DOM对象转为真实的DOM插入到页面中 如果有事件修改了虚拟">
+<meta name="keywords" content="虚拟DOM,diff算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈虚拟DOM、diff算法">
+<meta property="og:url" content="http://yoursite.com/2019/05/19/浅谈虚拟DOM、diff算法/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="React首先在内存中对整个结构进行组装，然后把这个结构转换成实际的DOM节点插入到浏览器DOM中。render执行的结果并不是真正的DOM节点，而是轻量的JS对象。React的虚拟对象使两个DOM树对比起来更快，具有批处理和高效Diff算法，找到他们的变化，计算更新DOM所需要做的最小的变更 虚拟DOM 用JS对象模拟DOM 把这个虚拟DOM对象转为真实的DOM插入到页面中 如果有事件修改了虚拟">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://img-blog.csdn.net/20180717182348969">
+<meta property="og:updated_time" content="2019-05-19T06:01:32.688Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅谈虚拟DOM、diff算法">
+<meta name="twitter:description" content="React首先在内存中对整个结构进行组装，然后把这个结构转换成实际的DOM节点插入到浏览器DOM中。render执行的结果并不是真正的DOM节点，而是轻量的JS对象。React的虚拟对象使两个DOM树对比起来更快，具有批处理和高效Diff算法，找到他们的变化，计算更新DOM所需要做的最小的变更 虚拟DOM 用JS对象模拟DOM 把这个虚拟DOM对象转为真实的DOM插入到页面中 如果有事件修改了虚拟">
+<meta name="twitter:image" content="https://img-blog.csdn.net/20180717182348969">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/19/浅谈虚拟DOM、diff算法/">
+
+
+
+
+
+  <title>浅谈虚拟DOM、diff算法 | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/19/浅谈虚拟DOM、diff算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浅谈虚拟DOM、diff算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-19T14:00:46+08:00">
+                2019-05-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/React/" itemprop="url" rel="index">
+                    <span itemprop="name">React</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>React首先在内存中对整个结构进行组装，然后把这个结构转换成实际的DOM节点插入到浏览器DOM中。render执行的结果并不是真正的DOM节点，而是轻量的JS对象。React的虚拟对象使两个DOM树对比起来更快，具有批处理和高效Diff算法，找到他们的变化，计算更新DOM所需要做的最小的变更</p>
+<h1 id="虚拟DOM"><a href="#虚拟DOM" class="headerlink" title="虚拟DOM"></a>虚拟DOM</h1><ol>
+<li>用JS对象模拟DOM</li>
+<li>把这个虚拟DOM对象转为真实的DOM插入到页面中</li>
+<li>如果有事件修改了虚拟DOM，比较两个虚拟DOM树的差异，得到差异对象</li>
+<li>把差异对象应用到真正的DOM树上</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">// 节点类</span><br><span class="line">    class Element&#123;</span><br><span class="line">        constructor(type,props,children)&#123;</span><br><span class="line">            this.type= type;</span><br><span class="line">            this.props= props;</span><br><span class="line">            this.children= children;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // 生成节点类实例</span><br><span class="line">    function createElement(type,props,children)&#123;</span><br><span class="line">        return new Element(type,props,children)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 创建一个虚拟DOM对象</span><br><span class="line">    let virtualDOM= createElement(&apos;ul&apos;,&#123;class: &apos;list&apos;&#125;,[</span><br><span class="line">        createElement(&apos;li&apos;,&#123;class: &apos;item&apos;&#125;,[&apos;a&apos;]),</span><br><span class="line">        createElement(&apos;li&apos;,&#123;class: &apos;item&apos;&#125;,[&apos;b&apos;]),</span><br><span class="line">        createElement(&apos;li&apos;,&#123;class: &apos;item&apos;&#125;,[&apos;c&apos;])        </span><br><span class="line">    ])</span><br><span class="line">    console.log(virtualDOM)</span><br><span class="line"></span><br><span class="line">    // 设置属性的方法</span><br><span class="line">    function setAttr(node,key,value)&#123;</span><br><span class="line">        switch(key)&#123;</span><br><span class="line">            case &apos;value&apos;: // node是input或者textarea</span><br><span class="line">                if(node.tagName.toUpperCase()=== &apos;INPUT&apos; || node.tagName.toUpperCase()=== &apos;TEXTAREA&apos;)&#123;</span><br><span class="line">                    node.value= value</span><br><span class="line">                &#125;else&#123;</span><br><span class="line">                    node.setAttribute(key,value)</span><br><span class="line">                &#125;</span><br><span class="line">                break;</span><br><span class="line">            case &apos;style&apos;: </span><br><span class="line">                node.style.cssText= value;</span><br><span class="line">                break;</span><br><span class="line">            default: </span><br><span class="line">                node.setAttribute(key,value)        </span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // render方法将vnode 转化成真实的dom</span><br><span class="line">    function render(eleObj)&#123;</span><br><span class="line">        let el= document.createElement(eleObj.type);    //生成父节点</span><br><span class="line">        // 遍历父节点的props添加属性</span><br><span class="line">        for(let key in eleObj.props)&#123;</span><br><span class="line">            // 设置属性的方法</span><br><span class="line">            setAttr(el,key,eleObj.props[key])</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 遍历父节点的children</span><br><span class="line">        eleObj.children.forEach(item =&gt; &#123;</span><br><span class="line">            item= (item instanceof Element)? render(item) : document.createTextNode(item)    //创建文本节点</span><br><span class="line">            el.appendChild(item)</span><br><span class="line">        &#125;);</span><br><span class="line">        return el</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    let el= render(virtualDOM)</span><br><span class="line">    console.log(el)</span><br><span class="line"></span><br><span class="line">    // 将元素插入到页面</span><br><span class="line">    function renderDOM(el,target)&#123;</span><br><span class="line">        target.appendChild(el)</span><br><span class="line">    &#125;</span><br><span class="line">    renderDOM(el,document.body)</span><br></pre></td></tr></table></figure>
+<h1 id="diff算法"><a href="#diff算法" class="headerlink" title="diff算法"></a>diff算法</h1><ul>
+<li>Diff 比较两个虚拟DOM的区别（比较两个对象的区别）</li>
+<li>根据两个虚拟对象的区别，创建出补丁（patch），描述改变的内容，将这个补丁用来更新页面</li>
+<li>差异计算： 先序深度优先遍历</li>
+</ul>
+<h1 id="diff三种优化策略"><a href="#diff三种优化策略" class="headerlink" title="diff三种优化策略"></a>diff三种优化策略</h1><ol>
+<li>比较同级的节点（同一父节点的子节点）<blockquote>
+<p>当发现节点已经不存在，则该节点及其子节点会被完全删除掉，不会用于进一步的比较。这样只需要对树进行一次遍历，便能完成整个DOM树的比较。对于不同层的节点，只有简单的创建和删除。</p>
+</blockquote>
+</li>
+<li>相同类型的节点比较：对属性进行重设实现节点的转换</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">renderA: &lt;div style=&#123;&#123;color: &apos;red&apos;&#125;&#125; /&gt;</span><br><span class="line">renderB: &lt;div style=&#123;&#123;fontWeight: &apos;bold&apos;&#125;&#125; /&gt;</span><br><span class="line">=&gt; [removeStyle color], [addStyle font-weight &apos;bold&apos;]</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>列表节点的比较（key存在的意义）</li>
+</ol>
+<ul>
+<li>添加、删除、排序</li>
+<li>顺序的调整类似插入/删除    </li>
+</ul>
+<h1 id="diff算法的三个维度"><a href="#diff算法的三个维度" class="headerlink" title="diff算法的三个维度"></a>diff算法的三个维度</h1><ol>
+<li>Tree diff</li>
+<li>Component diff</li>
+<li>Element fiff<br><img src="https://img-blog.csdn.net/20180717182348969" alt="image"></li>
+</ol>
+<h1 id="虚拟DOM的优缺点"><a href="#虚拟DOM的优缺点" class="headerlink" title="虚拟DOM的优缺点"></a>虚拟DOM的优缺点</h1><ol>
+<li>优点</li>
+</ol>
+<ul>
+<li>易用性强，使用DOM时，将把所有的XML文档信息都存于内存中，并且遍历简单，支持XPath，增强了易用性。</li>
+</ul>
+<ol start="2">
+<li>缺点</li>
+</ol>
+<ul>
+<li>效率低，解析速度慢，内存占用量过高，对于大文件来说几乎不可能使用。另外效率低还表现在大量的消耗时间，因为使用DOM进行解析时，将为文档的每个element、attribute、processing-instrUCtion和comment都创建一个对象，这样在DOM机制中所运用的大量对象的创建和销毁无疑会影响其效率。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/虚拟DOM/" rel="tag"># 虚拟DOM</a>
+          
+            <a href="/tags/diff算法/" rel="tag"># diff算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/19/React生命周期-16-8新增/" rel="next" title="React生命周期-16.8新增">
+                <i class="fa fa-chevron-left"></i> React生命周期-16.8新增
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">将喜欢的一切留在身边，这边是努力的意义</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟DOM"><span class="nav-number">1.</span> <span class="nav-text">虚拟DOM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#diff算法"><span class="nav-number">2.</span> <span class="nav-text">diff算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#diff三种优化策略"><span class="nav-number">3.</span> <span class="nav-text">diff三种优化策略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#diff算法的三个维度"><span class="nav-number">4.</span> <span class="nav-text">diff算法的三个维度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟DOM的优缺点"><span class="nav-number">5.</span> <span class="nav-text">虚拟DOM的优缺点</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
