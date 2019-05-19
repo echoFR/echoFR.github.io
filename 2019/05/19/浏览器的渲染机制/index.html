@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="输入url发生了什么,浏览器的渲染机制,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="输入url发生了什么 浏览器查找当前URL是否存在缓存，并比较缓存是否过期 浏览器会先根据这个URL查看浏览器缓存-系统缓存-路由器缓存，若缓存中有，直接Http连接   DNS解析域名对应的IP地址 建立TCP连接（三次握手） 发送HTTP请求 服务器处理请求，并返回HTTP报文 浏览器解析渲染页面 关闭TCP连接（四次挥手）  浏览器渲染 解析HTML 解析CSS 构建render tree">
+<meta name="keywords" content="输入url发生了什么,浏览器的渲染机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器的渲染机制">
+<meta property="og:url" content="http://yoursite.com/2019/05/19/浏览器的渲染机制/index.html">
+<meta property="og:site_name" content="fengrong&#39;s blog">
+<meta property="og:description" content="输入url发生了什么 浏览器查找当前URL是否存在缓存，并比较缓存是否过期 浏览器会先根据这个URL查看浏览器缓存-系统缓存-路由器缓存，若缓存中有，直接Http连接   DNS解析域名对应的IP地址 建立TCP连接（三次握手） 发送HTTP请求 服务器处理请求，并返回HTTP报文 浏览器解析渲染页面 关闭TCP连接（四次挥手）  浏览器渲染 解析HTML 解析CSS 构建render tree">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-19T05:38:59.920Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浏览器的渲染机制">
+<meta name="twitter:description" content="输入url发生了什么 浏览器查找当前URL是否存在缓存，并比较缓存是否过期 浏览器会先根据这个URL查看浏览器缓存-系统缓存-路由器缓存，若缓存中有，直接Http连接   DNS解析域名对应的IP地址 建立TCP连接（三次握手） 发送HTTP请求 服务器处理请求，并返回HTTP报文 浏览器解析渲染页面 关闭TCP连接（四次挥手）  浏览器渲染 解析HTML 解析CSS 构建render tree">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/19/浏览器的渲染机制/">
+
+
+
+
+
+  <title>浏览器的渲染机制 | fengrong's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fengrong's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/19/浏览器的渲染机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fengrong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fengrong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浏览器的渲染机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-19T13:37:11+08:00">
+                2019-05-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JS/" itemprop="url" rel="index">
+                    <span itemprop="name">JS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="输入url发生了什么"><a href="#输入url发生了什么" class="headerlink" title="输入url发生了什么"></a>输入url发生了什么</h1><ul>
+<li>浏览器查找当前URL是否存在缓存，并比较缓存是否过期<blockquote>
+<p>浏览器会先根据这个URL查看浏览器缓存-系统缓存-路由器缓存，若缓存中有，直接Http连接</p>
+</blockquote>
+</li>
+<li>DNS解析域名对应的IP地址</li>
+<li>建立TCP连接（三次握手）</li>
+<li>发送HTTP请求</li>
+<li>服务器处理请求，并返回HTTP报文</li>
+<li>浏览器解析渲染页面</li>
+<li>关闭TCP连接（四次挥手）</li>
+</ul>
+<h1 id="浏览器渲染"><a href="#浏览器渲染" class="headerlink" title="浏览器渲染"></a>浏览器渲染</h1><ol>
+<li>解析HTML</li>
+<li>解析CSS</li>
+<li>构建render tree</li>
+<li>layout  根据渲染树来布局，计算每个节点的位置，定位坐标和大小</li>
+<li>paint：调用 GPU 绘制，合成图层，显示在屏幕上</li>
+</ol>
+<p>页面加载完成有两种事件</p>
+<ol>
+<li>ready，表示文档结构已经加载完成（不包含图片等非文字媒体文件）</li>
+<li>onload，指示页面包含图片等文件在内的所有元素都加载完成</li>
+</ol>
+<h2 id="具体过程"><a href="#具体过程" class="headerlink" title="具体过程"></a>具体过程</h2><ol>
+<li>首先浏览器从服务器接收到html代码，自上而下解析html，构建DOM树，并且在同时构建渲染树。DOM树的构建过程是一个深度遍历过程：当前结点的所有子节点都构建好后才会去构建当结点的下一个兄弟结点</li>
+<li>将css解析成css去构造cssom树（css对象模型）</li>
+<li>根据DOM树和cssom来构造渲染render树。渲染树并不等同于DOM树，因此一些像Header或者display:none的东西就不会出现在渲染树中。</li>
+<li>根据render树进行布局，计算每个节点在屏幕中的大小和位置</li>
+<li>遍历render树进行绘制，并使用浏览器UI后端层绘制每个节点</li>
+</ol>
+<ul>
+<li>JS在下载时会阻塞一切行为（资源下载，内容呈现），JS在加载且执行完之前不会往下解析DOM树</li>
+<li>CSS并行下载，不会阻塞DOM树的解析，CSS加载会阻塞DOM树的渲染<br><strong>遇到js文件加载执行，将阻塞DOM树的构建；遇到css文件，将阻塞渲染树的构建</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 浏览器遇到script文件和css文件都会另起线程去下载</span><br><span class="line">- 内嵌的script脚本、外链的script脚本下载都会阻塞构建DOM树</span><br><span class="line">- css文件执行和内嵌的style标签阻塞css对象模型</span><br></pre></td></tr></table></figure>
+<p>在构建 CSSOM 树时，会阻塞渲染，直至 CSSOM 树构建完成。并且构建 CSSOM 树是一个十分消耗性能的过程，所以应该尽量保证层级扁平，减少过度层叠，越是具体的 CSS 选择器，执行速度越慢。</p>
+<p>当 HTML 解析到 script 标签时，会暂停构建 DOM，完成后才会从暂停的地方重新开始。也就是说，如果你想首屏渲染的越快，就越不应该在首屏就加载 JS 文件。并且 CSS 也会影响 JS 的执行，只有当解析完样式表才会执行 JS，所以也可以认为这种情况下，CSS 也会暂停构建 DOM。</p>
+<h2 id="JS和CSS的放置位置"><a href="#JS和CSS的放置位置" class="headerlink" title="JS和CSS的放置位置"></a><strong>JS和CSS的放置位置</strong></h2><ol>
+<li>JS放在body底部</li>
+<li>CSS放在head中</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1、把js放在body之后，是为了预防外部js文件过多，浏览器呈现页面出现延迟，延迟期间浏览器的窗口一片空白</span><br><span class="line">3、js脚本放在head和body有什么区别</span><br><span class="line">head中的脚本会在页面加载之前解析，可以保证脚本在任何调用之前被加载</span><br><span class="line">body中的脚本会在页面加载完成之后读取，放在body部分的脚本通常被用来生成页面的内容。因为加载js脚本会阻塞页面的加载，为了用户体验也为了脚本可以正常操作DOM，一般放在body中</span><br><span class="line">浏览器解析html是从上到下的</span><br><span class="line">如果把js放在head里的话，则先被解析，但这时候body还没有解析，所以会返回空值。一般都会绑定一个监听，当全部的html文档解析完之后，在执行代码：windows.onload</span><br></pre></td></tr></table></figure>
+<h2 id="Load-和-DOMContentLoaded-区别"><a href="#Load-和-DOMContentLoaded-区别" class="headerlink" title="Load 和 DOMContentLoaded 区别"></a>Load 和 DOMContentLoaded 区别</h2><p>Load 事件触发代表页面中的 DOM，CSS，JS，图片已经全部加载完毕。</p>
+<p>DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不需要等待 CSS，JS，图片加载。</p>
+<h1 id="图层"><a href="#图层" class="headerlink" title="图层"></a>图层</h1><p>一般来说，可以把普通文档流看成一个图层。特定的属性可以生成一个新的图层。不同的图层渲染互不影响，所以对于某些频繁需要渲染的建议单独生成一个新图层，提高性能。但也不能生成过多的图层，会引起反作用。</p>
+<p>通过以下几个常用属性可以生成新图层</p>
+<p>3D 变换：translate3d、translateZ<br>will-change<br>video、iframe 标签<br>通过动画实现的 opacity 动画转换<br>position: fixed</p>
+<h2 id="白屏和FOUC-闪屏"><a href="#白屏和FOUC-闪屏" class="headerlink" title="白屏和FOUC(闪屏)"></a><strong>白屏和FOUC(闪屏)</strong></h2><ol>
+<li>浏览器的解析方式的不同：</li>
+</ol>
+<ul>
+<li>Chrome和Safari<blockquote>
+<p>当发现<link rel="stylesheet"> 后立即停止渲染，在所有css加载完成之前页面上不会有任何内容</p>
+</blockquote>
+</li>
+<li>Firefox<blockquote>
+<p>放在head与Chrome和Safari中完全一致，这些link标签全部加载完之前，页面上不显示任何内容，而<body>中的内容则不阻塞任何内容显示，也就是说，放<body>内，先渲染没有样式的，再渲染有样式的。</body></body></p>
+</blockquote>
+</li>
+<li>IE/Edge<blockquote>
+<p>未加载完成的<link real="stylesheet">只阻塞其后面HTML内容显示，而对其前面的内容不影响</p>
+</blockquote>
+</li>
+</ul>
+<ol start="2">
+<li>白屏：</li>
+</ol>
+<ul>
+<li>chrome采用的是等CSS全部加载解析完后再渲染展示页面，CSS样式被置于底部（最后加载）</li>
+<li>使用 @import 标签,它引用的文件则会等页面全部下载完毕再被加载</li>
+<li>当JavaScript被置于顶部时，阻止其后的文件的加载及组件的下载</li>
+</ul>
+<ol start="3">
+<li>闪屏（FOUC 文档无样式闪烁）</li>
+</ol>
+<ul>
+<li>火狐将css放在body底部，html会先呈现出来，待到html加载完毕，再一次性加载CSS样式使得样式突然呈现</li>
+</ul>
+<h1 id="FOUC-无样式内容闪烁"><a href="#FOUC-无样式内容闪烁" class="headerlink" title="FOUC 无样式内容闪烁"></a>FOUC 无样式内容闪烁</h1><p>若使用@import对css样式表进行导入，会导致页面在window下的IE出现奇怪现象，无样式显示页面内容的瞬间闪烁</p>
+<h3 id="可能导致FOUC的原因"><a href="#可能导致FOUC的原因" class="headerlink" title="可能导致FOUC的原因"></a>可能导致FOUC的原因</h3><ol>
+<li>使用@import引入样式表</li>
+<li>将样式表放在页面底部</li>
+<li>有几个样式表放在放在html结构不同位置<blockquote>
+<p>样式表晚于结构性html加载，当加载到样式表时，页面停止之前的渲染，等样式表被下载并解析之后，将重新渲染页面。</p>
+</blockquote>
+</li>
+</ol>
+<h1 id="script标签的async和defer"><a href="#script标签的async和defer" class="headerlink" title="script标签的async和defer"></a>script标签的async和defer</h1><ul>
+<li>什么都不加：读到就加载，并执行指定脚本</li>
+</ul>
+<h2 id="async-和-defer-的作用与区别"><a href="#async-和-defer-的作用与区别" class="headerlink" title="async 和 defer 的作用与区别"></a>async 和 defer 的作用与区别</h2><ul>
+<li>作用：可以让后续文档元素和js加载并行加载（异步）</li>
+<li>区别：差别在于JS脚本下载完成后何时执行</li>
+</ul>
+<ol>
+<li>async；加载JS脚本与解析html并行（异步），加载完脚本立即执行。标记为async的脚本并不保证按照它们的先后顺序执行。</li>
+<li>defer：脚本会被延迟到整个页面都解析完毕后再运行，相当于浏览器立即下载但是延迟执行。按照顺序执行</li>
+</ol>
+<h2 id="重排（回流-reflow）"><a href="#重排（回流-reflow）" class="headerlink" title="重排（回流 reflow）"></a>重排（回流 reflow）</h2><p>某些元素的内容、结构、位置、尺寸发生变化影响了布局，需要重新计算样式和渲染树。</p>
+<h3 id="引起重排"><a href="#引起重排" class="headerlink" title="引起重排"></a>引起重排</h3><ul>
+<li>网页初始化的时候</li>
+<li>一些js在操作DOM树时 （增加、删除、修改DOM结点），获取某些属性时</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">offsetTop scrollTop client getComputedStyle()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>元素位置的改变，或者使用动画</li>
+<li>DOM元素的几何属性变化，如外边距、内边距、边框厚度、宽高、等几何属性)</li>
+<li>resize窗口的时候（移动端没有这个问题），或是滚动的时候</li>
+<li>修改CSS的属性时</li>
+<li>填充内容的改变，比如文本字体的改变或图片大小改变而引起的计算值宽度和高度的改变</li>
+<li>窗口属性的获取和尺寸改变</li>
+<li>激活CSS伪类（例如：:hover）</li>
+</ul>
+<h2 id="重绘（repaint）"><a href="#重绘（repaint）" class="headerlink" title="重绘（repaint）"></a>重绘（repaint）</h2><p>元素发生的改变只是影响了元素的一些外观之类的时候（例如，背景色，边框颜色，文字颜色等），此时只需要应用新样式绘制这个元素就OK了</p>
+<p><strong>display:none 会发生重排，visibility会发生重绘</strong></p>
+<p>重排一定会发生重绘、重绘不一定发生重排</p>
+<h3 id="减少重排重绘的方法"><a href="#减少重排重绘的方法" class="headerlink" title="减少重排重绘的方法"></a>减少重排重绘的方法</h3><ol>
+<li>display: none，把 DOM 离线后修改<blockquote>
+<p>由于display属性为none的元素不在渲染树中，对隐藏的元素操作不会引发其他元素的重排。如果要对一个元素进行复杂的操作时，可以先隐藏它，操作完成后再显示。这样只在隐藏和显示时触发2次重排。</p>
+</blockquote>
+</li>
+<li>为动画的DOM使用fixed或absolute的position：不会重排，脱离文档流</li>
+<li>元素位置移动变换时尽量使用transform代替left、top的操作。</li>
+<li>用opacity代替visibility，因为当时单独的图层时，透明度的改变时，GPU在绘画时只是简单的降低之前已经画好的纹理的alpha值来达到效果，不会发生重绘。</li>
+<li>不要把DOM结点的属性值放在一个循环里当成循环里的变量</li>
+<li>不要一条一条地修改DOM的样式。不如预先定义好css的class，修改DOM的className<br>（样式集中改变）</li>
+<li>分离读写操作：获取DOM属性（引起重排的属性）的时候先拿一个变量接收(缓存)</li>
+<li>如果需要创建多个DOM节点，可以使用DocumentFragment（文档片段）创建完后一次性的加入document；</li>
+<li><p>不要使用table布局，可能很小的一个小改动会造成整个 table 的重新布局</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">var fragment = document.createDocumentFragment();</span><br><span class="line"> </span><br><span class="line">var li = document.createElement(&apos;li&apos;);</span><br><span class="line">li.innerHTML = &apos;apple&apos;;</span><br><span class="line">fragment.appendChild(li);</span><br><span class="line"> </span><br><span class="line">var li = document.createElement(&apos;li&apos;);</span><br><span class="line">li.innerHTML = &apos;watermelon&apos;;</span><br><span class="line">fragment.appendChild(li);</span><br><span class="line"> </span><br><span class="line">document.getElementById(&apos;fruit&apos;).appendChild(fragment);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 visibility 替换 display: none ，因为前者只会引起重绘，后者会引发回流（改变了布局）</p>
+</li>
+<li>动画实现的速度的选择，动画速度越快，回流次数越多，也可以选择使用 requestAnimationFrame</li>
+<li>CSS 选择符从右往左匹配查找，避免 DOM 深度过深</li>
+<li>将频繁运行的动画变为图层，图层能够阻止该节点回流影响别的元素。比如对于 video 标签，浏览器会自动将该节点变为图层。</li>
+</ol>
+<p>重绘和回流其实和 Event loop 有关</p>
+<ol>
+<li>当 Event loop 执行完 Microtasks 后，会判断 document 是否需要更新。因为浏览器是 60Hz 的刷新率，每 16ms 才会更新一次。</li>
+<li>然后判断是否有 resize 或者 scroll ，有的话会去触发事件，所以 resize 和 scroll 事件也是至少 16ms 才会触发一次，并且自带节流功能。</li>
+<li>判断是否触发了 media query</li>
+<li>更新动画并且发送事件</li>
+<li>判断是否有全屏操作事件</li>
+<li>执行 requestAnimationFrame 回调</li>
+<li>执行 IntersectionObserver回调，该方法用于判断元素是否可见，可以用于懒加载上，但是兼容性不好</li>
+<li>更新界面</li>
+<li>以上就是一帧中可能会做的事情。如果在一帧中有空闲时间，就会去执行 requestIdleCallback 回调。</li>
+</ol>
+<h1 id="网页优化"><a href="#网页优化" class="headerlink" title="网页优化"></a>网页优化</h1><h2 id="1-减少http请求的次数"><a href="#1-减少http请求的次数" class="headerlink" title="1. 减少http请求的次数"></a>1. 减少http请求的次数</h2><p>在浏览器与服务器进行通信时，主要是通过 HTTP 进行通信。浏览器与服务器需要经过三次握手，每次握手需要花费大量时间。而且不同浏览器对资源文件并发请求数量有限（不同浏览器允许并发数），一旦 HTTP 请求数量达到一定数量，资源请求就存在等待状态，这是很致命的，因此减少 HTTP 的请求数量可以很大程度上对网站性能进行优化。</p>
+<ul>
+<li><strong>CSS Sprites</strong>(CSS精灵/雪碧图)：将多张图片合并成一张图片达到减少HTTP请求的一种解决方案，可以通过CSS的background属性来访问图片内容。这种方案同时还可以减少图片总字节数</li>
+<li><strong>合并CSS和JS文件</strong>：现在前端有很多工程化打包工具，如：grunt、gulp、webpack等。为了减少 HTTP 请求数量，可以通过这些工具再发布前将多个CSS或者多个JS合并成一个文件。</li>
+<li><strong>采用lazyload</strong>：懒加载，可以控制网页上的内容在一开始无需加载，不需要发请求，等到用户操作真正需要的时候立即加载出内容。这样就控制了网页资源一次性请求数量。</li>
+</ul>
+<h2 id="2-控制资源文件加载优先级"><a href="#2-控制资源文件加载优先级" class="headerlink" title="2. 控制资源文件加载优先级"></a>2. 控制资源文件加载优先级</h2><p>浏览器在加载HTML内容时，是将HTML内容从上至下依次解析，解析到link或者script标签就会加载href或者src对应链接内容，为了第一时间展示页面给用户，就需要将CSS提前加载，不要受 JS 加载影响</p>
+<p><strong>一般情况下都是CSS在头部，JS在底部。</strong></p>
+<h2 id="3-利用浏览器缓存"><a href="#3-利用浏览器缓存" class="headerlink" title="3. 利用浏览器缓存"></a>3. 利用浏览器缓存</h2><p>浏览器缓存是将网络资源存储在本地，等待下次请求该资源时，如果资源已经存在就不需要到服务器重新请求该资源，直接在本地读取该资源。</p>
+<h2 id="4-减少重排、重绘"><a href="#4-减少重排、重绘" class="headerlink" title="4. 减少重排、重绘"></a>4. 减少重排、重绘</h2><p>基本原理：重排是DOM的变化影响到了元素的几何属性（宽和高），浏览器会重新计算元素的几何属性，会使渲染树中受到影响的部分失效，浏览器会验证 DOM 树上的所有其它结点的visibility属性，这也是Reflow低效的原因。如果Reflow的过于频繁，CPU使用率就会急剧上升</p>
+<p>减少Reflow，如果需要在DOM操作时添加样式，尽量使用 增加class属性，而不是通过style操作样式。</p>
+<h2 id="启用GPU（图像处理器）硬件加速"><a href="#启用GPU（图像处理器）硬件加速" class="headerlink" title="启用GPU（图像处理器）硬件加速"></a>启用GPU（图像处理器）硬件加速</h2><p>GPU（Graphics Processing Unit） 是图像处理器。GPU 硬件加速是指应用 GPU 的图形性能对浏览器中的一些图形操作交给 GPU 来完成，因为 GPU 是专门为处理图形而设计，所以它在速度和能耗上更有效率。<br>GPU 加速可以不仅应用于3D，而且也可以应用于2D。这里， GPU 加速通常包括以下几个部分：Canvas2D，布局合成（Layout Compositing）, CSS3转换（transitions），CSS3 3D变换（transforms），WebGL和视频(video)。</p>
+<h2 id="脚本执行阶段"><a href="#脚本执行阶段" class="headerlink" title="脚本执行阶段"></a>脚本执行阶段</h2><ul>
+<li>尽量减少节点查找</li>
+<li>用<strong>事件委托</strong>来减少事件处理器的数量</li>
+<li>用querySelectorAll代替getElementBy</li>
+</ul>
+<ul>
+<li>节流、防抖</li>
+<li>DNS解析优化</li>
+<li>避免重定向</li>
+<li>cookie优化</li>
+<li>文件压缩</li>
+<li>图标使用IconFont替换</li>
+<li>启用GZIP压缩，浏览速度变快，搜索引擎的蜘蛛抓取信息量也会增大</li>
+<li>使用CDN网络缓存，加快用户访问速度，减轻服务器压力</li>
+<li>不使用CSS表达式，会影响效率</li>
+<li>伪静态设置<br>如果是动态网页，可以开启伪静态功能，让蜘蛛“误以为”这是静态网页，因为静态网页比较合蜘蛛的胃口，如果url中带有关键词效果更好。</li>
+<li>SEO搜索引擎优化</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/image/wechat.png" alt="fengrong 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/输入url发生了什么/" rel="tag"># 输入url发生了什么</a>
+          
+            <a href="/tags/浏览器的渲染机制/" rel="tag"># 浏览器的渲染机制</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/12/最全的三握四挥/" rel="next" title="最全的三握四挥!">
+                <i class="fa fa-chevron-left"></i> 最全的三握四挥!
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/30380503?s=460&v=4" alt="fengrong">
+            
+              <p class="site-author-name" itemprop="name">fengrong</p>
+              <p class="site-description motion-element" itemprop="description">将喜欢的一切留在身边，这边是努力的意义</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#输入url发生了什么"><span class="nav-number">1.</span> <span class="nav-text">输入url发生了什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#浏览器渲染"><span class="nav-number">2.</span> <span class="nav-text">浏览器渲染</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#具体过程"><span class="nav-number">2.1.</span> <span class="nav-text">具体过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JS和CSS的放置位置"><span class="nav-number">2.2.</span> <span class="nav-text">JS和CSS的放置位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Load-和-DOMContentLoaded-区别"><span class="nav-number">2.3.</span> <span class="nav-text">Load 和 DOMContentLoaded 区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#图层"><span class="nav-number">3.</span> <span class="nav-text">图层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#白屏和FOUC-闪屏"><span class="nav-number">3.1.</span> <span class="nav-text">白屏和FOUC(闪屏)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FOUC-无样式内容闪烁"><span class="nav-number">4.</span> <span class="nav-text">FOUC 无样式内容闪烁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#可能导致FOUC的原因"><span class="nav-number">4.0.1.</span> <span class="nav-text">可能导致FOUC的原因</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#script标签的async和defer"><span class="nav-number">5.</span> <span class="nav-text">script标签的async和defer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#async-和-defer-的作用与区别"><span class="nav-number">5.1.</span> <span class="nav-text">async 和 defer 的作用与区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重排（回流-reflow）"><span class="nav-number">5.2.</span> <span class="nav-text">重排（回流 reflow）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引起重排"><span class="nav-number">5.2.1.</span> <span class="nav-text">引起重排</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重绘（repaint）"><span class="nav-number">5.3.</span> <span class="nav-text">重绘（repaint）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#减少重排重绘的方法"><span class="nav-number">5.3.1.</span> <span class="nav-text">减少重排重绘的方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#网页优化"><span class="nav-number">6.</span> <span class="nav-text">网页优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-减少http请求的次数"><span class="nav-number">6.1.</span> <span class="nav-text">1. 减少http请求的次数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-控制资源文件加载优先级"><span class="nav-number">6.2.</span> <span class="nav-text">2. 控制资源文件加载优先级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-利用浏览器缓存"><span class="nav-number">6.3.</span> <span class="nav-text">3. 利用浏览器缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-减少重排、重绘"><span class="nav-number">6.4.</span> <span class="nav-text">4. 减少重排、重绘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启用GPU（图像处理器）硬件加速"><span class="nav-number">6.5.</span> <span class="nav-text">启用GPU（图像处理器）硬件加速</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脚本执行阶段"><span class="nav-number">6.6.</span> <span class="nav-text">脚本执行阶段</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fengrong</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
